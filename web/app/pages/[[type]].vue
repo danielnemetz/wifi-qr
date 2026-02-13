@@ -1,13 +1,55 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { Eye, EyeOff, Download, QrCode, Loader2, Shuffle, Sun, Moon } from 'lucide-vue-next'
 import { generateColorScheme } from '~/utils/colorScheme'
 
 const colorMode = useColorMode()
+const route = useRoute()
 
-// --- QR type & content ---
+// --- Valid QR types (alphabetical; first = default) and route sync ---
 type QrType = 'wifi' | 'url' | 'text' | 'vcard' | 'email' | 'sms' | 'tel' | 'geo'
-const qrType = ref<QrType>('wifi')
+const QR_TYPES_ORDERED: QrType[] = ['email', 'geo', 'sms', 'tel', 'text', 'url', 'vcard', 'wifi']
+const DEFAULT_TYPE: QrType = QR_TYPES_ORDERED[0]
+
+const TYPE_LABELS: Record<QrType, string> = {
+  email: 'E-Mail',
+  geo: 'Standort',
+  sms: 'SMS',
+  tel: 'Telefon',
+  text: 'Text',
+  url: 'URL',
+  vcard: 'Kontakt (vCard)',
+  wifi: 'Wi‑Fi',
+}
+
+function typeFromRoute(): QrType {
+  const t = route.params.type
+  const s = typeof t === 'string' ? t : Array.isArray(t) ? t[0] : ''
+  return (s && QR_TYPES_ORDERED.includes(s as QrType)) ? (s as QrType) : DEFAULT_TYPE
+}
+
+const qrType = ref<QrType>(typeFromRoute())
+
+// Sync URL when user changes type in the dropdown (every type has its path, e.g. /wifi)
+watch(qrType, (t) => {
+  const path = `/${t}`
+  if (route.path !== path) {
+    navigateTo(path, { replace: true })
+  }
+}, { flush: 'post' })
+
+// Sync type when user navigates (back/forward or direct URL)
+watch(() => route.path, () => {
+  const t = typeFromRoute()
+  if (qrType.value !== t) qrType.value = t
+}, { immediate: true })
+
+onMounted(() => {
+  if (route.path === '/') {
+    navigateTo(`/${DEFAULT_TYPE}`, { replace: true })
+  }
+})
+
 const urlContent = ref('')
 const textContent = ref('')
 // vCard
@@ -145,7 +187,6 @@ async function generate() {
       responseType: 'blob',
     })
 
-    // Revoke previous URL
     if (previewUrl.value) {
       URL.revokeObjectURL(previewUrl.value)
     }
@@ -206,7 +247,6 @@ function randomizeColors() {
   colorText.value = scheme.text
 }
 
-// --- Auto-regenerate on style changes (after first generation) ---
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 watch(
@@ -253,7 +293,6 @@ watch(
 <template>
   <div class="min-h-screen bg-muted flex items-center justify-center p-4 lg:p-6">
     <Card class="w-full max-w-7xl shadow-lg rounded-xl relative">
-      <!-- Dark Mode Toggle -->
       <Button
         variant="ghost"
         size="icon"
@@ -266,7 +305,6 @@ watch(
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
 
-        <!-- COLUMN 1: Type + content form -->
         <div class="p-5 lg:p-6 space-y-4 border-b md:border-b-0 md:border-r border-border flex flex-col">
           <div class="space-y-2">
             <Label for="qrType">QR-Typ</Label>
@@ -275,75 +313,69 @@ watch(
                 <SelectValue placeholder="Typ wählen" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="wifi">Wi‑Fi</SelectItem>
-                <SelectItem value="url">URL</SelectItem>
-                <SelectItem value="text">Text</SelectItem>
-                <SelectItem value="vcard">Kontakt (vCard)</SelectItem>
-                <SelectItem value="email">E-Mail</SelectItem>
-                <SelectItem value="sms">SMS</SelectItem>
-                <SelectItem value="tel">Telefon</SelectItem>
-                <SelectItem value="geo">Standort</SelectItem>
+                <SelectItem
+                  v-for="t in QR_TYPES_ORDERED"
+                  :key="t"
+                  :value="t"
+                >
+                  {{ TYPE_LABELS[t] }}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <!-- Wi‑Fi form -->
           <template v-if="qrType === 'wifi'">
             <h2 class="text-lg font-semibold tracking-tight">Netzwerk</h2>
             <div class="space-y-2">
               <Label for="ssid">SSID (Netzwerkname)</Label>
-            <Input
-              id="ssid"
-              v-model="ssid"
-              placeholder="z.B. MeinWLAN"
-              required
-            />
-          </div>
-
-          <div class="space-y-2">
-            <Label for="encryption">Verschlüsselung</Label>
-            <Select v-model="encryption">
-              <SelectTrigger id="encryption">
-                <SelectValue placeholder="Verschlüsselung wählen" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="WPA">WPA / WPA2 / WPA3</SelectItem>
-                <SelectItem value="WEP">WEP</SelectItem>
-                <SelectItem value="nopass">Keine (offen)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div v-if="encryption !== 'nopass'" class="space-y-2">
-            <Label for="password">Passwort</Label>
-            <div class="relative">
               <Input
-                id="password"
-                v-model="password"
-                :type="showPassword ? 'text' : 'password'"
-                placeholder="WLAN-Passwort"
-                class="pr-10"
+                id="ssid"
+                v-model="ssid"
+                placeholder="z.B. MeinWLAN"
+                required
               />
-              <button
-                type="button"
-                class="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                @click="showPassword = !showPassword"
-              >
-                <Eye v-if="!showPassword" class="h-4 w-4" />
-                <EyeOff v-else class="h-4 w-4" />
-              </button>
             </div>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <Checkbox id="hidden" v-model="isHidden" />
-            <Label for="hidden" class="text-sm font-normal cursor-pointer">
-              Verstecktes Netzwerk
-            </Label>
-          </div>
+            <div class="space-y-2">
+              <Label for="encryption">Verschlüsselung</Label>
+              <Select v-model="encryption">
+                <SelectTrigger id="encryption">
+                  <SelectValue placeholder="Verschlüsselung wählen" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="WPA">WPA / WPA2 / WPA3</SelectItem>
+                  <SelectItem value="WEP">WEP</SelectItem>
+                  <SelectItem value="nopass">Keine (offen)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div v-if="encryption !== 'nopass'" class="space-y-2">
+              <Label for="password">Passwort</Label>
+              <div class="relative">
+                <Input
+                  id="password"
+                  v-model="password"
+                  :type="showPassword ? 'text' : 'password'"
+                  placeholder="WLAN-Passwort"
+                  class="pr-10"
+                />
+                <button
+                  type="button"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  @click="showPassword = !showPassword"
+                >
+                  <Eye v-if="!showPassword" class="h-4 w-4" />
+                  <EyeOff v-else class="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <Checkbox id="hidden" v-model="isHidden" />
+              <Label for="hidden" class="text-sm font-normal cursor-pointer">
+                Verstecktes Netzwerk
+              </Label>
+            </div>
           </template>
 
-          <!-- URL form -->
           <template v-else-if="qrType === 'url'">
             <h2 class="text-lg font-semibold tracking-tight">URL</h2>
             <div class="space-y-2">
@@ -357,7 +389,6 @@ watch(
             </div>
           </template>
 
-          <!-- Text form -->
           <template v-else-if="qrType === 'text'">
             <h2 class="text-lg font-semibold tracking-tight">Text</h2>
             <div class="space-y-2">
@@ -372,7 +403,6 @@ watch(
             </div>
           </template>
 
-          <!-- vCard form -->
           <template v-else-if="qrType === 'vcard'">
             <h2 class="text-lg font-semibold tracking-tight">Kontakt</h2>
             <div class="space-y-2">
@@ -393,7 +423,6 @@ watch(
             </div>
           </template>
 
-          <!-- E-Mail form -->
           <template v-else-if="qrType === 'email'">
             <h2 class="text-lg font-semibold tracking-tight">E-Mail</h2>
             <div class="space-y-2">
@@ -416,7 +445,6 @@ watch(
             </div>
           </template>
 
-          <!-- SMS form -->
           <template v-else-if="qrType === 'sms'">
             <h2 class="text-lg font-semibold tracking-tight">SMS</h2>
             <div class="space-y-2">
@@ -429,7 +457,6 @@ watch(
             </div>
           </template>
 
-          <!-- Telefon form -->
           <template v-else-if="qrType === 'tel'">
             <h2 class="text-lg font-semibold tracking-tight">Telefon</h2>
             <div class="space-y-2">
@@ -438,7 +465,6 @@ watch(
             </div>
           </template>
 
-          <!-- Standort form -->
           <template v-else-if="qrType === 'geo'">
             <h2 class="text-lg font-semibold tracking-tight">Standort</h2>
             <div class="space-y-2">
@@ -451,15 +477,8 @@ watch(
             </div>
           </template>
 
-          <!-- Push button to bottom -->
           <div class="flex-1" />
-
-          <!-- Error Message -->
-          <p v-if="errorMessage" class="text-sm text-destructive">
-            {{ errorMessage }}
-          </p>
-
-          <!-- Generate Button -->
+          <p v-if="errorMessage" class="text-sm text-destructive">{{ errorMessage }}</p>
           <Button
             class="w-full"
             size="lg"
@@ -472,14 +491,9 @@ watch(
           </Button>
         </div>
 
-        <!-- COLUMN 2: Preview -->
         <div class="p-5 lg:p-6 flex flex-col items-center justify-center min-h-[350px] border-b md:border-b-0 md:border-r border-border gap-4">
           <template v-if="previewUrl">
-            <img
-              :src="previewUrl"
-              alt="QR-Code Vorschau"
-              class="w-full max-w-xs rounded-lg shadow-md"
-            />
+            <img :src="previewUrl" alt="QR-Code Vorschau" class="w-full max-w-xs rounded-lg shadow-md" />
             <Button variant="outline" @click="downloadImage">
               <Download class="mr-2 h-4 w-4" />
               PNG herunterladen
@@ -496,88 +510,59 @@ watch(
           </template>
         </div>
 
-        <!-- COLUMN 3: Style -->
         <div class="p-5 lg:p-6 space-y-4 md:col-span-2 lg:col-span-1">
           <h2 class="text-lg font-semibold tracking-tight">Stil</h2>
-
-          <!-- Colors -->
           <div class="space-y-2">
             <div class="flex items-center justify-between">
               <Label class="text-sm text-muted-foreground">Farben</Label>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger as-child>
-                      <Button variant="ghost" size="icon" class="h-7 w-7" @click="randomizeColors">
-                        <Shuffle class="h-3.5 w-3.5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Zufälliges Farbschema</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger as-child>
+                    <Button variant="ghost" size="icon" class="h-7 w-7" @click="randomizeColors">
+                      <Shuffle class="h-3.5 w-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent><p>Zufälliges Farbschema</p></TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             <div class="grid grid-cols-5 gap-2">
               <div class="space-y-1">
-                <label
-                  for="colorBg"
-                  class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer"
-                  :style="{ backgroundColor: colorBackground }"
-                >
+                <label for="colorBg" class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer" :style="{ backgroundColor: colorBackground }">
                   <input id="colorBg" v-model="colorBackground" type="color" class="sr-only" />
                 </label>
                 <span class="text-[10px] text-muted-foreground text-center block">Hintergrund</span>
               </div>
               <div class="space-y-1">
-                <label
-                  for="colorDs"
-                  class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer"
-                  :style="{ backgroundColor: colorDotsStart }"
-                >
+                <label for="colorDs" class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer" :style="{ backgroundColor: colorDotsStart }">
                   <input id="colorDs" v-model="colorDotsStart" type="color" class="sr-only" />
                 </label>
                 <span class="text-[10px] text-muted-foreground text-center block">Punkte 1</span>
               </div>
               <div class="space-y-1">
-                <label
-                  for="colorDe"
-                  class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer"
-                  :style="{ backgroundColor: colorDotsEnd }"
-                >
+                <label for="colorDe" class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer" :style="{ backgroundColor: colorDotsEnd }">
                   <input id="colorDe" v-model="colorDotsEnd" type="color" class="sr-only" />
                 </label>
                 <span class="text-[10px] text-muted-foreground text-center block">Punkte 2</span>
               </div>
               <div class="space-y-1">
-                <label
-                  for="colorCo"
-                  class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer"
-                  :style="{ backgroundColor: colorCorners }"
-                >
+                <label for="colorCo" class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer" :style="{ backgroundColor: colorCorners }">
                   <input id="colorCo" v-model="colorCorners" type="color" class="sr-only" />
                 </label>
                 <span class="text-[10px] text-muted-foreground text-center block">Ecken</span>
               </div>
               <div class="space-y-1">
-                <label
-                  for="colorTx"
-                  class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer"
-                  :style="{ backgroundColor: colorText }"
-                >
+                <label for="colorTx" class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer" :style="{ backgroundColor: colorText }">
                   <input id="colorTx" v-model="colorText" type="color" class="sr-only" />
                 </label>
                 <span class="text-[10px] text-muted-foreground text-center block">Text</span>
               </div>
             </div>
           </div>
-
-          <!-- QR Style Dropdowns -->
           <div class="space-y-2">
             <Label for="dotsType">Punkt-Stil</Label>
             <Select v-model="dotsType">
-              <SelectTrigger id="dotsType">
-                <SelectValue />
-              </SelectTrigger>
+              <SelectTrigger id="dotsType"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="rounded">Rounded</SelectItem>
                 <SelectItem value="dots">Dots</SelectItem>
@@ -588,13 +573,10 @@ watch(
               </SelectContent>
             </Select>
           </div>
-
           <div class="space-y-2">
             <Label for="cornersSquare">Ecken außen</Label>
             <Select v-model="cornersSquareType">
-              <SelectTrigger id="cornersSquare">
-                <SelectValue />
-              </SelectTrigger>
+              <SelectTrigger id="cornersSquare"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="extra-rounded">Extra Rounded</SelectItem>
                 <SelectItem value="square">Square</SelectItem>
@@ -602,27 +584,20 @@ watch(
               </SelectContent>
             </Select>
           </div>
-
           <div class="space-y-2">
             <Label for="cornersDot">Ecken innen</Label>
             <Select v-model="cornersDotType">
-              <SelectTrigger id="cornersDot">
-                <SelectValue />
-              </SelectTrigger>
+              <SelectTrigger id="cornersDot"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="dot">Dot</SelectItem>
                 <SelectItem value="square">Square</SelectItem>
               </SelectContent>
             </Select>
           </div>
-
-          <!-- Image Size & Padding -->
           <div class="space-y-2">
             <Label for="imageSize">Bildgröße</Label>
             <Select v-model="imageSize">
-              <SelectTrigger id="imageSize">
-                <SelectValue />
-              </SelectTrigger>
+              <SelectTrigger id="imageSize"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem :value="600">600 px</SelectItem>
                 <SelectItem :value="900">900 px</SelectItem>
@@ -631,24 +606,13 @@ watch(
               </SelectContent>
             </Select>
           </div>
-
           <div class="space-y-2">
             <Label>Padding: {{ qrMargin }}</Label>
-            <Slider
-              v-model="qrMarginArr"
-              :min="0"
-              :max="80"
-              :step="1"
-              class="mt-2"
-            />
+            <Slider v-model="qrMarginArr" :min="0" :max="80" :step="1" class="mt-2" />
           </div>
-
-          <!-- Info text toggle -->
           <div class="flex items-center gap-2">
             <Checkbox id="showInfo" v-model="showInfoInImage" />
-            <Label for="showInfo" class="text-sm font-normal cursor-pointer">
-              Info-Text anzeigen
-            </Label>
+            <Label for="showInfo" class="text-sm font-normal cursor-pointer">Info-Text anzeigen</Label>
           </div>
         </div>
 
