@@ -3,7 +3,10 @@ import { buildWifiString } from '../../../src/wifi';
 import type { WifiEncryption, StyleConfig, QrType } from '../../../src/types';
 import { resolveStyle } from '../../../src/config';
 
-function buildLabelLines(type: QrType, payload: { ssid: string; password?: string } | { url: string }): string[] {
+function buildLabelLines(
+  type: QrType,
+  payload: { ssid: string; password?: string } | { url: string } | { text: string },
+): string[] {
   const resolved = resolveStyle(undefined);
   if (type === 'wifi') {
     const p = payload as { ssid: string; password?: string };
@@ -12,12 +15,15 @@ function buildLabelLines(type: QrType, payload: { ssid: string; password?: strin
       ...(p.password ? [resolved.textTemplatePassword.replace('{password}', p.password)] : []),
     ];
   }
-  return [payload.url];
+  if (type === 'url') return [(payload as { url: string }).url];
+  const firstLine = (payload as { text: string }).text.split(/\r?\n/)[0]?.trim() || '';
+  return firstLine ? [firstLine] : [];
 }
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  const type: QrType = body.type === 'url' ? 'url' : 'wifi';
+  const type: QrType =
+    body.type === 'url' ? 'url' : body.type === 'text' ? 'text' : 'wifi';
 
   let data: string;
   let labelLines: string[];
@@ -48,7 +54,7 @@ export default defineEventHandler(async (event) => {
     data = buildWifiString(cfg);
     labelLines = buildLabelLines('wifi', { ssid, password });
     filename = ssid.replace(/[^a-zA-Z0-9_-]/g, '_');
-  } else {
+  } else if (type === 'url') {
     const url = String(body.url ?? '').trim();
     if (!url) {
       throw createError({ statusCode: 400, statusMessage: 'URL is required' });
@@ -61,6 +67,15 @@ export default defineEventHandler(async (event) => {
     } catch {
       filename = 'url';
     }
+  } else {
+    const text = String(body.text ?? '').trim();
+    if (!text) {
+      throw createError({ statusCode: 400, statusMessage: 'Text is required' });
+    }
+    data = text;
+    labelLines = buildLabelLines('text', { text });
+    const firstLine = text.split(/\r?\n/)[0]?.slice(0, 30) || 'text';
+    filename = firstLine.replace(/[^a-zA-Z0-9_-]/g, '_') || 'text';
   }
 
   const style: StyleConfig | undefined = body.style ?? undefined;

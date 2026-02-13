@@ -6,9 +6,10 @@ import { generateColorScheme } from '~/utils/colorScheme'
 const colorMode = useColorMode()
 
 // --- QR type & content ---
-type QrType = 'wifi' | 'url'
+type QrType = 'wifi' | 'url' | 'text'
 const qrType = ref<QrType>('wifi')
 const urlContent = ref('')
+const textContent = ref('')
 
 // --- Network settings (Wi‑Fi) ---
 const ssid = ref('')
@@ -46,7 +47,8 @@ const canGenerate = computed(() => {
     if (encryption.value !== 'nopass' && !password.value) return false
     return true
   }
-  return urlContent.value.trim().length > 0
+  if (qrType.value === 'url') return urlContent.value.trim().length > 0
+  return textContent.value.trim().length > 0
 })
 
 async function generate() {
@@ -76,8 +78,10 @@ async function generate() {
       body.encryption = encryption.value
       body.password = encryption.value !== 'nopass' ? password.value : undefined
       body.isHidden = isHidden.value
-    } else {
+    } else if (qrType.value === 'url') {
       body.url = urlContent.value.trim()
+    } else {
+      body.text = textContent.value.trim()
     }
 
     const response = await $fetch<Blob>('/api/generate', {
@@ -104,12 +108,16 @@ function downloadFilename(): string {
   if (qrType.value === 'wifi') {
     return `${ssid.value.trim().replace(/[^a-zA-Z0-9_-]/g, '_')}.png`
   }
-  try {
-    const u = new URL(urlContent.value.trim())
-    return `${u.hostname.replace(/[^a-zA-Z0-9_.-]/g, '_')}.png`
-  } catch {
-    return 'url.png'
+  if (qrType.value === 'url') {
+    try {
+      const u = new URL(urlContent.value.trim())
+      return `${u.hostname.replace(/[^a-zA-Z0-9_.-]/g, '_')}.png`
+    } catch {
+      return 'url.png'
+    }
   }
+  const first = textContent.value.trim().split(/\r?\n/)[0]?.slice(0, 30) || 'text'
+  return `${first.replace(/[^a-zA-Z0-9_-]/g, '_')}.png`
 }
 
 function downloadImage() {
@@ -140,6 +148,7 @@ watch(
     password,
     isHidden,
     urlContent,
+    textContent,
     colorBackground,
     colorDotsStart,
     colorDotsEnd,
@@ -187,6 +196,7 @@ watch(
               <SelectContent>
                 <SelectItem value="wifi">Wi‑Fi</SelectItem>
                 <SelectItem value="url">URL</SelectItem>
+                <SelectItem value="text">Text</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -248,7 +258,7 @@ watch(
           </template>
 
           <!-- URL form -->
-          <template v-else>
+          <template v-else-if="qrType === 'url'">
             <h2 class="text-lg font-semibold tracking-tight">URL</h2>
             <div class="space-y-2">
               <Label for="url">Adresse</Label>
@@ -257,6 +267,21 @@ watch(
                 v-model="urlContent"
                 type="url"
                 placeholder="https://beispiel.de"
+              />
+            </div>
+          </template>
+
+          <!-- Text form -->
+          <template v-else>
+            <h2 class="text-lg font-semibold tracking-tight">Text</h2>
+            <div class="space-y-2">
+              <Label for="text">Inhalt</Label>
+              <textarea
+                id="text"
+                v-model="textContent"
+                placeholder="Beliebiger Text für den QR-Code …"
+                rows="5"
+                class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
               />
             </div>
           </template>
@@ -299,7 +324,7 @@ watch(
             <div class="flex flex-col items-center gap-3 text-muted-foreground">
               <QrCode class="h-16 w-16 opacity-20" />
               <p class="text-sm text-center">
-                {{ qrType === 'wifi' ? 'Fülle die Netzwerkdaten aus' : 'Gib eine URL ein' }} und klicke<br />
+                {{ qrType === 'wifi' ? 'Fülle die Netzwerkdaten aus' : qrType === 'url' ? 'Gib eine URL ein' : 'Gib einen Text ein' }} und klicke<br />
                 auf <strong>„QR-Code generieren"</strong>.
               </p>
             </div>
