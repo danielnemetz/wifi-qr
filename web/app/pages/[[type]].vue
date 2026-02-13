@@ -12,13 +12,13 @@ const QR_TYPES_ORDERED: QrType[] = ['email', 'geo', 'sms', 'tel', 'text', 'url',
 const DEFAULT_TYPE: QrType = QR_TYPES_ORDERED[0]
 
 const TYPE_LABELS: Record<QrType, string> = {
-  email: 'E-Mail',
-  geo: 'Standort',
+  email: 'Email',
+  geo: 'Location',
   sms: 'SMS',
-  tel: 'Telefon',
+  tel: 'Phone',
   text: 'Text',
   url: 'URL',
-  vcard: 'Kontakt (vCard)',
+  vcard: 'Contact (vCard)',
   wifi: 'Wi‑Fi',
 }
 
@@ -57,16 +57,16 @@ const vcardName = ref('')
 const vcardPhone = ref('')
 const vcardEmail = ref('')
 const vcardOrg = ref('')
-// E-Mail
+// Email
 const emailAddress = ref('')
 const emailSubject = ref('')
 const emailBody = ref('')
 // SMS
 const smsPhone = ref('')
 const smsBody = ref('')
-// Telefon
+// Phone
 const telPhone = ref('')
-// Standort
+// Location
 const geoLat = ref('')
 const geoLng = ref('')
 
@@ -102,14 +102,14 @@ const errorMessage = ref('')
 
 const emptyStateHint = computed(() => {
   const hints: Record<QrType, string> = {
-    wifi: 'Fülle die Netzwerkdaten aus',
-    url: 'Gib eine URL ein',
-    text: 'Gib einen Text ein',
-    vcard: 'Trage Kontaktdaten ein',
-    email: 'Gib eine E-Mail-Adresse ein',
-    sms: 'Gib eine Telefonnummer ein',
-    tel: 'Gib eine Telefonnummer ein',
-    geo: 'Gib Breiten- und Längengrad ein',
+    wifi: 'Fill in the network details',
+    url: 'Enter a URL',
+    text: 'Enter some text',
+    vcard: 'Enter contact details',
+    email: 'Enter an email address',
+    sms: 'Enter a phone number',
+    tel: 'Enter a phone number',
+    geo: 'Enter latitude and longitude',
   }
   return hints[qrType.value]
 })
@@ -194,7 +194,7 @@ async function generate() {
     blobRef.value = response
     previewUrl.value = URL.createObjectURL(response)
   } catch (err: any) {
-    errorMessage.value = err?.data?.statusMessage || err?.message || 'Fehler bei der Generierung'
+    errorMessage.value = err?.data?.statusMessage || err?.message || 'Generation failed'
   } finally {
     generating.value = false
   }
@@ -307,10 +307,10 @@ watch(
 
         <div class="p-5 lg:p-6 space-y-4 border-b md:border-b-0 md:border-r border-border flex flex-col">
           <div class="space-y-2">
-            <Label for="qrType">QR-Typ</Label>
+            <Label for="qrType">QR type</Label>
             <Select v-model="qrType">
               <SelectTrigger id="qrType">
-                <SelectValue placeholder="Typ wählen" />
+                <SelectValue placeholder="Choose type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem
@@ -325,37 +325,37 @@ watch(
           </div>
 
           <template v-if="qrType === 'wifi'">
-            <h2 class="text-lg font-semibold tracking-tight">Netzwerk</h2>
+            <h2 class="text-lg font-semibold tracking-tight">Network</h2>
             <div class="space-y-2">
-              <Label for="ssid">SSID (Netzwerkname)</Label>
+              <Label for="ssid">SSID (network name)</Label>
               <Input
                 id="ssid"
                 v-model="ssid"
-                placeholder="z.B. MeinWLAN"
+                placeholder="e.g. MyNetwork"
                 required
               />
             </div>
             <div class="space-y-2">
-              <Label for="encryption">Verschlüsselung</Label>
+              <Label for="encryption">Encryption</Label>
               <Select v-model="encryption">
                 <SelectTrigger id="encryption">
-                  <SelectValue placeholder="Verschlüsselung wählen" />
+                  <SelectValue placeholder="Choose encryption" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="WPA">WPA / WPA2 / WPA3</SelectItem>
                   <SelectItem value="WEP">WEP</SelectItem>
-                  <SelectItem value="nopass">Keine (offen)</SelectItem>
+                  <SelectItem value="nopass">None (open)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div v-if="encryption !== 'nopass'" class="space-y-2">
-              <Label for="password">Passwort</Label>
+              <Label for="password">Password</Label>
               <div class="relative">
                 <Input
                   id="password"
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'"
-                  placeholder="WLAN-Passwort"
+                  placeholder="Wi‑Fi password"
                   class="pr-10"
                 />
                 <button
@@ -371,7 +371,7 @@ watch(
             <div class="flex items-center gap-2">
               <Checkbox id="hidden" v-model="isHidden" />
               <Label for="hidden" class="text-sm font-normal cursor-pointer">
-                Verstecktes Netzwerk
+                Hidden network
               </Label>
             </div>
           </template>
@@ -379,12 +379,12 @@ watch(
           <template v-else-if="qrType === 'url'">
             <h2 class="text-lg font-semibold tracking-tight">URL</h2>
             <div class="space-y-2">
-              <Label for="url">Adresse</Label>
+              <Label for="url">Address</Label>
               <Input
                 id="url"
                 v-model="urlContent"
                 type="url"
-                placeholder="https://beispiel.de"
+                placeholder="https://example.com"
               />
             </div>
           </template>
@@ -392,11 +392,11 @@ watch(
           <template v-else-if="qrType === 'text'">
             <h2 class="text-lg font-semibold tracking-tight">Text</h2>
             <div class="space-y-2">
-              <Label for="text">Inhalt</Label>
+              <Label for="text">Content</Label>
               <textarea
                 id="text"
                 v-model="textContent"
-                placeholder="Beliebiger Text für den QR-Code …"
+                placeholder="Any text for the QR code …"
                 rows="5"
                 class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
               />
@@ -404,41 +404,41 @@ watch(
           </template>
 
           <template v-else-if="qrType === 'vcard'">
-            <h2 class="text-lg font-semibold tracking-tight">Kontakt</h2>
+            <h2 class="text-lg font-semibold tracking-tight">Contact</h2>
             <div class="space-y-2">
               <Label for="vcardName">Name</Label>
-              <Input id="vcardName" v-model="vcardName" placeholder="Max Mustermann" />
+              <Input id="vcardName" v-model="vcardName" placeholder="John Doe" />
             </div>
             <div class="space-y-2">
-              <Label for="vcardPhone">Telefon</Label>
-              <Input id="vcardPhone" v-model="vcardPhone" type="tel" placeholder="+49 123 456789" />
+              <Label for="vcardPhone">Phone</Label>
+              <Input id="vcardPhone" v-model="vcardPhone" type="tel" placeholder="+1 234 567890" />
             </div>
             <div class="space-y-2">
-              <Label for="vcardEmail">E-Mail</Label>
-              <Input id="vcardEmail" v-model="vcardEmail" type="email" placeholder="max@beispiel.de" />
+              <Label for="vcardEmail">Email</Label>
+              <Input id="vcardEmail" v-model="vcardEmail" type="email" placeholder="john@example.com" />
             </div>
             <div class="space-y-2">
-              <Label for="vcardOrg">Organisation (optional)</Label>
-              <Input id="vcardOrg" v-model="vcardOrg" placeholder="Firma GmbH" />
+              <Label for="vcardOrg">Organization (optional)</Label>
+              <Input id="vcardOrg" v-model="vcardOrg" placeholder="Acme Inc." />
             </div>
           </template>
 
           <template v-else-if="qrType === 'email'">
-            <h2 class="text-lg font-semibold tracking-tight">E-Mail</h2>
+            <h2 class="text-lg font-semibold tracking-tight">Email</h2>
             <div class="space-y-2">
-              <Label for="email">E-Mail-Adresse</Label>
-              <Input id="email" v-model="emailAddress" type="email" placeholder="empfaenger@beispiel.de" />
+              <Label for="email">Email address</Label>
+              <Input id="email" v-model="emailAddress" type="email" placeholder="recipient@example.com" />
             </div>
             <div class="space-y-2">
-              <Label for="emailSubject">Betreff (optional)</Label>
-              <Input id="emailSubject" v-model="emailSubject" placeholder="Betreffzeile" />
+              <Label for="emailSubject">Subject (optional)</Label>
+              <Input id="emailSubject" v-model="emailSubject" placeholder="Subject line" />
             </div>
             <div class="space-y-2">
-              <Label for="emailBody">Nachricht (optional)</Label>
+              <Label for="emailBody">Message (optional)</Label>
               <textarea
                 id="emailBody"
                 v-model="emailBody"
-                placeholder="Vorausgefüllter Text …"
+                placeholder="Pre-filled message …"
                 rows="3"
                 class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
               />
@@ -448,31 +448,31 @@ watch(
           <template v-else-if="qrType === 'sms'">
             <h2 class="text-lg font-semibold tracking-tight">SMS</h2>
             <div class="space-y-2">
-              <Label for="smsPhone">Telefonnummer</Label>
-              <Input id="smsPhone" v-model="smsPhone" type="tel" placeholder="+49 123 456789" />
+              <Label for="smsPhone">Phone number</Label>
+              <Input id="smsPhone" v-model="smsPhone" type="tel" placeholder="+1 234 567890" />
             </div>
             <div class="space-y-2">
-              <Label for="smsBody">Nachricht (optional)</Label>
-              <Input id="smsBody" v-model="smsBody" placeholder="Vorausgefüllter Text" />
+              <Label for="smsBody">Message (optional)</Label>
+              <Input id="smsBody" v-model="smsBody" placeholder="Pre-filled message" />
             </div>
           </template>
 
           <template v-else-if="qrType === 'tel'">
-            <h2 class="text-lg font-semibold tracking-tight">Telefon</h2>
+            <h2 class="text-lg font-semibold tracking-tight">Phone</h2>
             <div class="space-y-2">
-              <Label for="telPhone">Telefonnummer</Label>
-              <Input id="telPhone" v-model="telPhone" type="tel" placeholder="+49 123 456789" />
+              <Label for="telPhone">Phone number</Label>
+              <Input id="telPhone" v-model="telPhone" type="tel" placeholder="+1 234 567890" />
             </div>
           </template>
 
           <template v-else-if="qrType === 'geo'">
-            <h2 class="text-lg font-semibold tracking-tight">Standort</h2>
+            <h2 class="text-lg font-semibold tracking-tight">Location</h2>
             <div class="space-y-2">
-              <Label for="geoLat">Breitengrad</Label>
+              <Label for="geoLat">Latitude</Label>
               <Input id="geoLat" v-model="geoLat" type="text" inputmode="decimal" placeholder="52.520008" />
             </div>
             <div class="space-y-2">
-              <Label for="geoLng">Längengrad</Label>
+              <Label for="geoLng">Longitude</Label>
               <Input id="geoLng" v-model="geoLng" type="text" inputmode="decimal" placeholder="13.404954" />
             </div>
           </template>
@@ -487,34 +487,34 @@ watch(
           >
             <Loader2 v-if="generating" class="mr-2 h-4 w-4 animate-spin" />
             <QrCode v-else class="mr-2 h-4 w-4" />
-            {{ generating ? 'Generiere...' : 'QR-Code generieren' }}
+            {{ generating ? 'Generating...' : 'Generate QR code' }}
           </Button>
         </div>
 
         <div class="p-5 lg:p-6 flex flex-col items-center justify-center min-h-[350px] border-b md:border-b-0 md:border-r border-border gap-4">
           <template v-if="previewUrl">
-            <img :src="previewUrl" alt="QR-Code Vorschau" class="w-full max-w-xs rounded-lg shadow-md" />
+            <img :src="previewUrl" alt="QR code preview" class="w-full max-w-xs rounded-lg shadow-md" />
             <Button variant="outline" @click="downloadImage">
               <Download class="mr-2 h-4 w-4" />
-              PNG herunterladen
+              Download PNG
             </Button>
           </template>
           <template v-else>
             <div class="flex flex-col items-center gap-3 text-muted-foreground">
               <QrCode class="h-16 w-16 opacity-20" />
               <p class="text-sm text-center">
-                {{ emptyStateHint }} und klicke<br />
-                auf <strong>„QR-Code generieren"</strong>.
+                {{ emptyStateHint }} and click<br />
+                <strong>Generate QR code</strong>.
               </p>
             </div>
           </template>
         </div>
 
         <div class="p-5 lg:p-6 space-y-4 md:col-span-2 lg:col-span-1">
-          <h2 class="text-lg font-semibold tracking-tight">Stil</h2>
+          <h2 class="text-lg font-semibold tracking-tight">Style</h2>
           <div class="space-y-2">
             <div class="flex items-center justify-between">
-              <Label class="text-sm text-muted-foreground">Farben</Label>
+              <Label class="text-sm text-muted-foreground">Colors</Label>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger as-child>
@@ -522,7 +522,7 @@ watch(
                       <Shuffle class="h-3.5 w-3.5" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent><p>Zufälliges Farbschema</p></TooltipContent>
+                  <TooltipContent><p>Random color scheme</p></TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
@@ -531,25 +531,25 @@ watch(
                 <label for="colorBg" class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer" :style="{ backgroundColor: colorBackground }">
                   <input id="colorBg" v-model="colorBackground" type="color" class="sr-only" />
                 </label>
-                <span class="text-[10px] text-muted-foreground text-center block">Hintergrund</span>
+                <span class="text-[10px] text-muted-foreground text-center block">Background</span>
               </div>
               <div class="space-y-1">
                 <label for="colorDs" class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer" :style="{ backgroundColor: colorDotsStart }">
                   <input id="colorDs" v-model="colorDotsStart" type="color" class="sr-only" />
                 </label>
-                <span class="text-[10px] text-muted-foreground text-center block">Punkte 1</span>
+                <span class="text-[10px] text-muted-foreground text-center block">Dots 1</span>
               </div>
               <div class="space-y-1">
                 <label for="colorDe" class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer" :style="{ backgroundColor: colorDotsEnd }">
                   <input id="colorDe" v-model="colorDotsEnd" type="color" class="sr-only" />
                 </label>
-                <span class="text-[10px] text-muted-foreground text-center block">Punkte 2</span>
+                <span class="text-[10px] text-muted-foreground text-center block">Dots 2</span>
               </div>
               <div class="space-y-1">
                 <label for="colorCo" class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer" :style="{ backgroundColor: colorCorners }">
                   <input id="colorCo" v-model="colorCorners" type="color" class="sr-only" />
                 </label>
-                <span class="text-[10px] text-muted-foreground text-center block">Ecken</span>
+                <span class="text-[10px] text-muted-foreground text-center block">Corners</span>
               </div>
               <div class="space-y-1">
                 <label for="colorTx" class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer" :style="{ backgroundColor: colorText }">
@@ -560,7 +560,7 @@ watch(
             </div>
           </div>
           <div class="space-y-2">
-            <Label for="dotsType">Punkt-Stil</Label>
+            <Label for="dotsType">Dot style</Label>
             <Select v-model="dotsType">
               <SelectTrigger id="dotsType"><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -574,7 +574,7 @@ watch(
             </Select>
           </div>
           <div class="space-y-2">
-            <Label for="cornersSquare">Ecken außen</Label>
+            <Label for="cornersSquare">Outer corners</Label>
             <Select v-model="cornersSquareType">
               <SelectTrigger id="cornersSquare"><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -585,7 +585,7 @@ watch(
             </Select>
           </div>
           <div class="space-y-2">
-            <Label for="cornersDot">Ecken innen</Label>
+            <Label for="cornersDot">Inner corners</Label>
             <Select v-model="cornersDotType">
               <SelectTrigger id="cornersDot"><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -595,7 +595,7 @@ watch(
             </Select>
           </div>
           <div class="space-y-2">
-            <Label for="imageSize">Bildgröße</Label>
+            <Label for="imageSize">Image size</Label>
             <Select v-model="imageSize">
               <SelectTrigger id="imageSize"><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -612,7 +612,7 @@ watch(
           </div>
           <div class="flex items-center gap-2">
             <Checkbox id="showInfo" v-model="showInfoInImage" />
-            <Label for="showInfo" class="text-sm font-normal cursor-pointer">Info-Text anzeigen</Label>
+            <Label for="showInfo" class="text-sm font-normal cursor-pointer">Show info text</Label>
           </div>
         </div>
 

@@ -104,7 +104,7 @@ export default defineEventHandler(async (event) => {
     const email = String(body.vcardEmail ?? '').trim();
     const org = String(body.vcardOrg ?? '').trim();
     if (!name && !phone && !email) {
-      throw createError({ statusCode: 400, statusMessage: 'Name, Telefon oder E-Mail ist erforderlich' });
+      throw createError({ statusCode: 400, statusMessage: 'Name, phone or email is required' });
     }
     data = buildVcardString({
       name: name || 'Kontakt',
@@ -116,7 +116,7 @@ export default defineEventHandler(async (event) => {
     filename = (name || 'vcard').replace(/[^a-zA-Z0-9_-]/g, '_') || 'vcard';
   } else if (type === 'email') {
     const email = String(body.email ?? '').trim();
-    if (!email) throw createError({ statusCode: 400, statusMessage: 'E-Mail ist erforderlich' });
+    if (!email) throw createError({ statusCode: 400, statusMessage: 'Email is required' });
     const subject = String(body.emailSubject ?? '').trim();
     const bodyText = String(body.emailBody ?? '').trim();
     data = buildMailtoString({ email, subject: subject || undefined, body: bodyText || undefined });
@@ -124,14 +124,14 @@ export default defineEventHandler(async (event) => {
     filename = email.replace(/[^a-zA-Z0-9_.@+-]/g, '_') || 'email';
   } else if (type === 'sms') {
     const phone = String(body.smsPhone ?? '').trim();
-    if (!phone) throw createError({ statusCode: 400, statusMessage: 'Telefonnummer ist erforderlich' });
+    if (!phone) throw createError({ statusCode: 400, statusMessage: 'Phone number is required' });
     const bodyText = String(body.smsBody ?? '').trim();
     data = buildSmsString({ phone, body: bodyText || undefined });
     labelLines = buildLabelLines('sms', { phone, body: bodyText });
     filename = `sms_${phone.replace(/\D/g, '').slice(-8)}` || 'sms';
   } else if (type === 'tel') {
     const phone = String(body.telPhone ?? '').trim();
-    if (!phone) throw createError({ statusCode: 400, statusMessage: 'Telefonnummer ist erforderlich' });
+    if (!phone) throw createError({ statusCode: 400, statusMessage: 'Phone number is required' });
     data = buildTelString(phone);
     labelLines = buildLabelLines('tel', { phone });
     filename = `tel_${phone.replace(/\D/g, '').slice(-8)}` || 'tel';

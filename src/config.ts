@@ -9,6 +9,7 @@ export const config = {
 
   // --- Image Dimensions ---
   imageSize: 1200,            // Total canvas size (px, square)
+  maxImageSize: 2400,         // Cap for API/style overrides (DoS prevention)
   qrSize: 850,                // QR code area size (px)
   qrOffsetY: -30,             // Vertical shift of QR code (negative = up)
   qrMargin: 30,               // Inner padding around QR modules
@@ -72,7 +73,11 @@ export interface ResolvedStyle {
 /** Merge optional StyleConfig overrides with the built-in defaults. */
 export const resolveStyle = (overrides?: StyleConfig): ResolvedStyle => {
   const s = overrides ?? {};
-  const imageSize = s.imageSize ?? config.imageSize;
+  const requestedSize = s.imageSize ?? config.imageSize;
+  const imageSize = Math.min(
+    Math.max(100, Number(requestedSize) || config.imageSize),
+    config.maxImageSize,
+  );
   return {
     imageSize,
     qrSize: Math.round(imageSize * (config.qrSize / config.imageSize)),

@@ -57,10 +57,10 @@ All visual settings live in [`src/config.ts`](src/config.ts):
 
 ## Web Interface
 
-Browser-Oberfläche zum Erstellen gestalteter QR-Codes (Wi‑Fi, URL, Text, Kontakt, E-Mail, SMS, Telefon, Standort) mit Live-Vorschau und anpassbarem Stil.
+Browser UI for generating styled QR codes (Wi‑Fi, URL, text, contact, email, SMS, phone, location) with live preview and customizable style.
 
-- **Starten:** `pnpm dev:web` (im Projektroot) bzw. `cd web && pnpm dev`
-- **Beschreibung:** Siehe [web/README.md](web/README.md) für Routing, QR-Typen, Oberfläche und API.
+- **Run:** `pnpm dev:web` (from project root) or `cd web && pnpm dev`
+- **Docs:** See [web/README.md](web/README.md) for routing, QR types, UI, and API.
 
 ## Tech Stack
 
@@ -71,4 +71,4 @@ Browser-Oberfläche zum Erstellen gestalteter QR-Codes (Wi‑Fi, URL, Text, Kont
 - **canvas** — server-side image compositing
 - **@inquirer/prompts** — interactive CLI prompts
 
-**Web:** siehe [web/README.md](web/README.md).
+**Web:** see [web/README.md](web/README.md).
