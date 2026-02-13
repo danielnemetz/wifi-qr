@@ -3,6 +3,8 @@
 // Adjust these values to change the look of the output image.
 // ============================================================
 
+import type { StyleConfig } from './types';
+
 export const config = {
 
   // --- Image Dimensions ---
@@ -44,3 +46,51 @@ export const config = {
   outputDir: '.',             // Directory for generated images
 
 } as const;
+
+/** Resolved (flat) style values used by qr.ts and image.ts. */
+export interface ResolvedStyle {
+  imageSize: number;
+  qrSize: number;
+  qrOffsetY: number;
+  qrMargin: number;
+  colorBackground: string;
+  colorDotsStart: string;
+  colorDotsEnd: string;
+  colorCorners: string;
+  colorText: string;
+  dotsType: string;
+  dotsGradientRotation: number;
+  cornersSquareType: string;
+  cornersDotType: string;
+  showInfoInImage: boolean;
+  fontSize: number;
+  fontFamily: string;
+  textTemplateSsid: string;
+  textTemplatePassword: string;
+}
+
+/** Merge optional StyleConfig overrides with the built-in defaults. */
+export const resolveStyle = (overrides?: StyleConfig): ResolvedStyle => {
+  const s = overrides ?? {};
+  const imageSize = s.imageSize ?? config.imageSize;
+  return {
+    imageSize,
+    qrSize: Math.round(imageSize * (config.qrSize / config.imageSize)),
+    qrOffsetY: Math.round(imageSize * (config.qrOffsetY / config.imageSize)),
+    qrMargin: s.qrMargin ?? config.qrMargin,
+    colorBackground: s.colorBackground ?? config.colors.background,
+    colorDotsStart: s.colorDotsStart ?? config.colors.dotsStart,
+    colorDotsEnd: s.colorDotsEnd ?? config.colors.dotsEnd,
+    colorCorners: s.colorCorners ?? config.colors.corners,
+    colorText: s.colorText ?? config.colors.text,
+    dotsType: s.dotsType ?? config.dotsType,
+    dotsGradientRotation: config.dotsGradientRotation,
+    cornersSquareType: s.cornersSquareType ?? config.cornersSquareType,
+    cornersDotType: s.cornersDotType ?? config.cornersDotType,
+    showInfoInImage: s.showInfoInImage ?? config.showInfoInImage,
+    fontSize: config.fontSize,
+    fontFamily: config.fontFamily,
+    textTemplateSsid: config.textTemplateSsid,
+    textTemplatePassword: config.textTemplatePassword,
+  };
+};

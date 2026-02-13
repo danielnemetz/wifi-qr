@@ -1,45 +1,46 @@
 // Polyfill: qr-code-styling-node references the browser global `self`
 (globalThis as any).self = globalThis;
 
-const QRCodeStyling = require('qr-code-styling-node');
-
-import { config } from './config';
+import { resolveStyle, type ResolvedStyle } from './config';
 import { buildWifiString } from './wifi';
-import type { WifiConfig } from './types';
+import type { WifiConfig, StyleConfig } from './types';
 
 /**
  * Generates a styled QR code PNG buffer with transparent background.
  */
-export const generateQrBuffer = async (cfg: WifiConfig): Promise<Buffer> => {
-  const nodeCanvas = require('canvas');
+export const generateQrBuffer = async (cfg: WifiConfig, style?: StyleConfig): Promise<Buffer> => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { default: QRCodeStyling } = await import('qr-code-styling-node') as any;
+  const nodeCanvas = await import('canvas');
+  const s: ResolvedStyle = resolveStyle(style);
 
   const qrCode = new QRCodeStyling({
     nodeCanvas,
-    width: config.qrSize,
-    height: config.qrSize,
+    width: s.qrSize,
+    height: s.qrSize,
     data: buildWifiString(cfg),
-    margin: config.qrMargin,
+    margin: s.qrMargin,
 
     dotsOptions: {
-      type: config.dotsType,
+      type: s.dotsType,
       gradient: {
         type: "linear",
-        rotation: config.dotsGradientRotation,
+        rotation: s.dotsGradientRotation,
         colorStops: [
-          { offset: 0, color: config.colors.dotsStart },
-          { offset: 1, color: config.colors.dotsEnd },
+          { offset: 0, color: s.colorDotsStart },
+          { offset: 1, color: s.colorDotsEnd },
         ],
       },
     },
 
     cornersSquareOptions: {
-      type: config.cornersSquareType,
-      color: config.colors.corners,
+      type: s.cornersSquareType,
+      color: s.colorCorners,
     },
 
     cornersDotOptions: {
-      type: config.cornersDotType,
-      color: config.colors.corners,
+      type: s.cornersDotType,
+      color: s.colorCorners,
     },
 
     backgroundOptions: {

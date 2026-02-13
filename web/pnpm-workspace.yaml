@@ -1,0 +1,1 @@
+approveBuildsAllow: '@parcel/watcher,esbuild,vue-demi'

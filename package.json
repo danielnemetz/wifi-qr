@@ -6,7 +6,9 @@
   "scripts": {
     "start": "tsx src/main.ts",
     "build": "tsc",
-    "build:run": "tsc && node dist/main.js"
+    "build:run": "tsc && node dist/main.js",
+    "dev:web": "cd web && pnpm dev",
+    "build:web": "cd web && pnpm build"
   },
   "keywords": [],
   "author": "",
