@@ -28,8 +28,10 @@ export const composeImageBuffer = async (
   ctx.fillStyle = s.colorBackground;
   ctx.fillRect(0, 0, s.imageSize, s.imageSize);
 
+  const showText = Boolean(s.showInfoInImage && labelLines?.length);
+  const qrOffsetY = showText ? s.qrOffsetY : 0;
   const qrX = (s.imageSize - s.qrSize) / 2;
-  const qrY = (s.imageSize - s.qrSize) / 2 + s.qrOffsetY;
+  const qrY = (s.imageSize - s.qrSize) / 2 + qrOffsetY;
   ctx.drawImage(qrImage, qrX, qrY, s.qrSize, s.qrSize);
 
   if (s.showInfoInImage && labelLines?.length) {

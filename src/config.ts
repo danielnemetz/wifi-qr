@@ -87,7 +87,7 @@ export const resolveStyle = (overrides?: StyleConfig): ResolvedStyle => {
     dotsGradientRotation: config.dotsGradientRotation,
     cornersSquareType: s.cornersSquareType ?? config.cornersSquareType,
     cornersDotType: s.cornersDotType ?? config.cornersDotType,
-    showInfoInImage: s.showInfoInImage ?? config.showInfoInImage,
+    showInfoInImage: s.showInfoInImage === false ? false : (s.showInfoInImage ?? config.showInfoInImage),
     fontSize: config.fontSize,
     fontFamily: config.fontFamily,
     textTemplateSsid: config.textTemplateSsid,

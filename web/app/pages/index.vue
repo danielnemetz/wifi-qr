@@ -6,10 +6,27 @@ import { generateColorScheme } from '~/utils/colorScheme'
 const colorMode = useColorMode()
 
 // --- QR type & content ---
-type QrType = 'wifi' | 'url' | 'text'
+type QrType = 'wifi' | 'url' | 'text' | 'vcard' | 'email' | 'sms' | 'tel' | 'geo'
 const qrType = ref<QrType>('wifi')
 const urlContent = ref('')
 const textContent = ref('')
+// vCard
+const vcardName = ref('')
+const vcardPhone = ref('')
+const vcardEmail = ref('')
+const vcardOrg = ref('')
+// E-Mail
+const emailAddress = ref('')
+const emailSubject = ref('')
+const emailBody = ref('')
+// SMS
+const smsPhone = ref('')
+const smsBody = ref('')
+// Telefon
+const telPhone = ref('')
+// Standort
+const geoLat = ref('')
+const geoLng = ref('')
 
 // --- Network settings (Wi‑Fi) ---
 const ssid = ref('')
@@ -41,6 +58,20 @@ const previewUrl = ref<string | null>(null)
 const blobRef = ref<Blob | null>(null)
 const errorMessage = ref('')
 
+const emptyStateHint = computed(() => {
+  const hints: Record<QrType, string> = {
+    wifi: 'Fülle die Netzwerkdaten aus',
+    url: 'Gib eine URL ein',
+    text: 'Gib einen Text ein',
+    vcard: 'Trage Kontaktdaten ein',
+    email: 'Gib eine E-Mail-Adresse ein',
+    sms: 'Gib eine Telefonnummer ein',
+    tel: 'Gib eine Telefonnummer ein',
+    geo: 'Gib Breiten- und Längengrad ein',
+  }
+  return hints[qrType.value]
+})
+
 const canGenerate = computed(() => {
   if (qrType.value === 'wifi') {
     if (!ssid.value.trim()) return false
@@ -48,7 +79,14 @@ const canGenerate = computed(() => {
     return true
   }
   if (qrType.value === 'url') return urlContent.value.trim().length > 0
-  return textContent.value.trim().length > 0
+  if (qrType.value === 'text') return textContent.value.trim().length > 0
+  if (qrType.value === 'vcard') {
+    return vcardName.value.trim() || vcardPhone.value.trim() || vcardEmail.value.trim()
+  }
+  if (qrType.value === 'email') return emailAddress.value.trim().length > 0
+  if (qrType.value === 'sms' || qrType.value === 'tel') return (qrType.value === 'sms' ? smsPhone : telPhone).value.trim().length > 0
+  if (qrType.value === 'geo') return geoLat.value.trim().length > 0 && geoLng.value.trim().length > 0
+  return false
 })
 
 async function generate() {
@@ -70,7 +108,7 @@ async function generate() {
           cornersDotType: cornersDotType.value,
           imageSize: imageSize.value,
           qrMargin: qrMargin.value,
-          showInfoInImage: showInfoInImage.value,
+          showInfoInImage: Boolean(showInfoInImage.value),
         },
     }
     if (qrType.value === 'wifi') {
@@ -80,8 +118,25 @@ async function generate() {
       body.isHidden = isHidden.value
     } else if (qrType.value === 'url') {
       body.url = urlContent.value.trim()
-    } else {
+    } else if (qrType.value === 'text') {
       body.text = textContent.value.trim()
+    } else if (qrType.value === 'vcard') {
+      body.vcardName = vcardName.value.trim()
+      body.vcardPhone = vcardPhone.value.trim()
+      body.vcardEmail = vcardEmail.value.trim()
+      body.vcardOrg = vcardOrg.value.trim()
+    } else if (qrType.value === 'email') {
+      body.email = emailAddress.value.trim()
+      body.emailSubject = emailSubject.value.trim()
+      body.emailBody = emailBody.value.trim()
+    } else if (qrType.value === 'sms') {
+      body.smsPhone = smsPhone.value.trim()
+      body.smsBody = smsBody.value.trim()
+    } else if (qrType.value === 'tel') {
+      body.telPhone = telPhone.value.trim()
+    } else if (qrType.value === 'geo') {
+      body.geoLat = Number(geoLat.value)
+      body.geoLng = Number(geoLng.value)
     }
 
     const response = await $fetch<Blob>('/api/generate', {
@@ -116,8 +171,22 @@ function downloadFilename(): string {
       return 'url.png'
     }
   }
-  const first = textContent.value.trim().split(/\r?\n/)[0]?.slice(0, 30) || 'text'
-  return `${first.replace(/[^a-zA-Z0-9_-]/g, '_')}.png`
+  if (qrType.value === 'text') {
+    const first = textContent.value.trim().split(/\r?\n/)[0]?.slice(0, 30) || 'text'
+    return `${first.replace(/[^a-zA-Z0-9_-]/g, '_')}.png`
+  }
+  if (qrType.value === 'vcard') {
+    const n = vcardName.value.trim() || 'vcard'
+    return `${n.replace(/[^a-zA-Z0-9_-]/g, '_')}.png`
+  }
+  if (qrType.value === 'email') {
+    const e = emailAddress.value.trim().replace(/[^a-zA-Z0-9_.@+-]/g, '_') || 'email'
+    return `${e}.png`
+  }
+  if (qrType.value === 'sms') return `sms_${smsPhone.value.replace(/\D/g, '').slice(-8) || 'sms'}.png`
+  if (qrType.value === 'tel') return `tel_${telPhone.value.replace(/\D/g, '').slice(-8) || 'tel'}.png`
+  if (qrType.value === 'geo') return `geo_${geoLat.value}_${geoLng.value}.png`.replace(/[^a-zA-Z0-9_.-]/g, '_')
+  return 'qr.png'
 }
 
 function downloadImage() {
@@ -149,6 +218,18 @@ watch(
     isHidden,
     urlContent,
     textContent,
+    vcardName,
+    vcardPhone,
+    vcardEmail,
+    vcardOrg,
+    emailAddress,
+    emailSubject,
+    emailBody,
+    smsPhone,
+    smsBody,
+    telPhone,
+    geoLat,
+    geoLng,
     colorBackground,
     colorDotsStart,
     colorDotsEnd,
@@ -197,6 +278,11 @@ watch(
                 <SelectItem value="wifi">Wi‑Fi</SelectItem>
                 <SelectItem value="url">URL</SelectItem>
                 <SelectItem value="text">Text</SelectItem>
+                <SelectItem value="vcard">Kontakt (vCard)</SelectItem>
+                <SelectItem value="email">E-Mail</SelectItem>
+                <SelectItem value="sms">SMS</SelectItem>
+                <SelectItem value="tel">Telefon</SelectItem>
+                <SelectItem value="geo">Standort</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -250,7 +336,7 @@ watch(
           </div>
 
           <div class="flex items-center gap-2">
-            <Checkbox id="hidden" v-model:checked="isHidden" />
+            <Checkbox id="hidden" v-model="isHidden" />
             <Label for="hidden" class="text-sm font-normal cursor-pointer">
               Verstecktes Netzwerk
             </Label>
@@ -272,7 +358,7 @@ watch(
           </template>
 
           <!-- Text form -->
-          <template v-else>
+          <template v-else-if="qrType === 'text'">
             <h2 class="text-lg font-semibold tracking-tight">Text</h2>
             <div class="space-y-2">
               <Label for="text">Inhalt</Label>
@@ -283,6 +369,85 @@ watch(
                 rows="5"
                 class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
               />
+            </div>
+          </template>
+
+          <!-- vCard form -->
+          <template v-else-if="qrType === 'vcard'">
+            <h2 class="text-lg font-semibold tracking-tight">Kontakt</h2>
+            <div class="space-y-2">
+              <Label for="vcardName">Name</Label>
+              <Input id="vcardName" v-model="vcardName" placeholder="Max Mustermann" />
+            </div>
+            <div class="space-y-2">
+              <Label for="vcardPhone">Telefon</Label>
+              <Input id="vcardPhone" v-model="vcardPhone" type="tel" placeholder="+49 123 456789" />
+            </div>
+            <div class="space-y-2">
+              <Label for="vcardEmail">E-Mail</Label>
+              <Input id="vcardEmail" v-model="vcardEmail" type="email" placeholder="max@beispiel.de" />
+            </div>
+            <div class="space-y-2">
+              <Label for="vcardOrg">Organisation (optional)</Label>
+              <Input id="vcardOrg" v-model="vcardOrg" placeholder="Firma GmbH" />
+            </div>
+          </template>
+
+          <!-- E-Mail form -->
+          <template v-else-if="qrType === 'email'">
+            <h2 class="text-lg font-semibold tracking-tight">E-Mail</h2>
+            <div class="space-y-2">
+              <Label for="email">E-Mail-Adresse</Label>
+              <Input id="email" v-model="emailAddress" type="email" placeholder="empfaenger@beispiel.de" />
+            </div>
+            <div class="space-y-2">
+              <Label for="emailSubject">Betreff (optional)</Label>
+              <Input id="emailSubject" v-model="emailSubject" placeholder="Betreffzeile" />
+            </div>
+            <div class="space-y-2">
+              <Label for="emailBody">Nachricht (optional)</Label>
+              <textarea
+                id="emailBody"
+                v-model="emailBody"
+                placeholder="Vorausgefüllter Text …"
+                rows="3"
+                class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
+              />
+            </div>
+          </template>
+
+          <!-- SMS form -->
+          <template v-else-if="qrType === 'sms'">
+            <h2 class="text-lg font-semibold tracking-tight">SMS</h2>
+            <div class="space-y-2">
+              <Label for="smsPhone">Telefonnummer</Label>
+              <Input id="smsPhone" v-model="smsPhone" type="tel" placeholder="+49 123 456789" />
+            </div>
+            <div class="space-y-2">
+              <Label for="smsBody">Nachricht (optional)</Label>
+              <Input id="smsBody" v-model="smsBody" placeholder="Vorausgefüllter Text" />
+            </div>
+          </template>
+
+          <!-- Telefon form -->
+          <template v-else-if="qrType === 'tel'">
+            <h2 class="text-lg font-semibold tracking-tight">Telefon</h2>
+            <div class="space-y-2">
+              <Label for="telPhone">Telefonnummer</Label>
+              <Input id="telPhone" v-model="telPhone" type="tel" placeholder="+49 123 456789" />
+            </div>
+          </template>
+
+          <!-- Standort form -->
+          <template v-else-if="qrType === 'geo'">
+            <h2 class="text-lg font-semibold tracking-tight">Standort</h2>
+            <div class="space-y-2">
+              <Label for="geoLat">Breitengrad</Label>
+              <Input id="geoLat" v-model="geoLat" type="text" inputmode="decimal" placeholder="52.520008" />
+            </div>
+            <div class="space-y-2">
+              <Label for="geoLng">Längengrad</Label>
+              <Input id="geoLng" v-model="geoLng" type="text" inputmode="decimal" placeholder="13.404954" />
             </div>
           </template>
 
@@ -324,7 +489,7 @@ watch(
             <div class="flex flex-col items-center gap-3 text-muted-foreground">
               <QrCode class="h-16 w-16 opacity-20" />
               <p class="text-sm text-center">
-                {{ qrType === 'wifi' ? 'Fülle die Netzwerkdaten aus' : qrType === 'url' ? 'Gib eine URL ein' : 'Gib einen Text ein' }} und klicke<br />
+                {{ emptyStateHint }} und klicke<br />
                 auf <strong>„QR-Code generieren"</strong>.
               </p>
             </div>
@@ -480,7 +645,7 @@ watch(
 
           <!-- Info text toggle -->
           <div class="flex items-center gap-2">
-            <Checkbox id="showInfo" v-model:checked="showInfoInImage" />
+            <Checkbox id="showInfo" v-model="showInfoInImage" />
             <Label for="showInfo" class="text-sm font-normal cursor-pointer">
               Info-Text anzeigen
             </Label>
