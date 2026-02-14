@@ -9,6 +9,8 @@ import {
   Shuffle,
   Sun,
   Moon,
+  Plus,
+  Trash2,
 } from "lucide-vue-next";
 import { generateColorScheme } from "~/utils/colorScheme";
 import {
@@ -87,6 +89,52 @@ const telPhone = ref("");
 const geoLat = ref("");
 const geoLng = ref("");
 
+// Dynamic vCard fields
+const vcardTitle = ref("");
+const vcardRole = ref("");
+const vcardUrl = ref("");
+const vcardNote = ref("");
+const vcardBirthday = ref("");
+const vcardStreet = ref("");
+const vcardCity = ref("");
+const vcardZip = ref("");
+const vcardCountry = ref("");
+
+const activeVcardFields = ref<string[]>([]);
+
+const AVAILABLE_VCARD_FIELDS = [
+  { id: "title", label: "Job Title", group: "Job" },
+  { id: "role", label: "Role", group: "Job" },
+  { id: "url", label: "Website", group: "Other" },
+  { id: "note", label: "Note", group: "Other" },
+  { id: "birthday", label: "Birthday", group: "Other" },
+  { id: "address", label: "Address", group: "Location" },
+];
+
+function addVcardField(fieldId: string) {
+  if (!activeVcardFields.value.includes(fieldId)) {
+    activeVcardFields.value.push(fieldId);
+  }
+}
+
+function removeVcardField(fieldId: string) {
+  activeVcardFields.value = activeVcardFields.value.filter(
+    (f) => f !== fieldId,
+  );
+  // Clear field values when removed
+  if (fieldId === "title") vcardTitle.value = "";
+  if (fieldId === "role") vcardRole.value = "";
+  if (fieldId === "url") vcardUrl.value = "";
+  if (fieldId === "note") vcardNote.value = "";
+  if (fieldId === "birthday") vcardBirthday.value = "";
+  if (fieldId === "address") {
+    vcardStreet.value = "";
+    vcardCity.value = "";
+    vcardZip.value = "";
+    vcardCountry.value = "";
+  }
+}
+
 // --- Network settings (Wi‑Fi) ---
 const ssid = ref("");
 const encryption = ref("WPA");
@@ -146,6 +194,33 @@ function getCurrentPayload():
       phone: vcardPhone.value.trim() || undefined,
       email: vcardEmail.value.trim() || undefined,
       org: vcardOrg.value.trim() || undefined,
+      title: activeVcardFields.value.includes("title")
+        ? vcardTitle.value.trim() || undefined
+        : undefined,
+      role: activeVcardFields.value.includes("role")
+        ? vcardRole.value.trim() || undefined
+        : undefined,
+      url: activeVcardFields.value.includes("url")
+        ? vcardUrl.value.trim() || undefined
+        : undefined,
+      note: activeVcardFields.value.includes("note")
+        ? vcardNote.value.trim() || undefined
+        : undefined,
+      birthday: activeVcardFields.value.includes("birthday")
+        ? vcardBirthday.value.trim() || undefined
+        : undefined,
+      street: activeVcardFields.value.includes("address")
+        ? vcardStreet.value.trim() || undefined
+        : undefined,
+      city: activeVcardFields.value.includes("address")
+        ? vcardCity.value.trim() || undefined
+        : undefined,
+      zip: activeVcardFields.value.includes("address")
+        ? vcardZip.value.trim() || undefined
+        : undefined,
+      country: activeVcardFields.value.includes("address")
+        ? vcardCountry.value.trim() || undefined
+        : undefined,
     };
   }
   if (t === "email") {
@@ -193,7 +268,8 @@ const canGenerate = computed(() => {
     return (
       !!vcardName.value.trim() ||
       !!vcardPhone.value.trim() ||
-      !!vcardEmail.value.trim()
+      !!vcardEmail.value.trim() ||
+      activeVcardFields.value.length > 0
     );
   }
   if (qrType.value === "email") return emailAddress.value.trim().length > 0;
@@ -243,6 +319,22 @@ async function generate() {
       body.vcardPhone = vcardPhone.value.trim();
       body.vcardEmail = vcardEmail.value.trim();
       body.vcardOrg = vcardOrg.value.trim();
+      if (activeVcardFields.value.includes("title"))
+        body.vcardTitle = vcardTitle.value.trim();
+      if (activeVcardFields.value.includes("role"))
+        body.vcardRole = vcardRole.value.trim();
+      if (activeVcardFields.value.includes("url"))
+        body.vcardUrl = vcardUrl.value.trim();
+      if (activeVcardFields.value.includes("note"))
+        body.vcardNote = vcardNote.value.trim();
+      if (activeVcardFields.value.includes("birthday"))
+        body.vcardBirthday = vcardBirthday.value.trim();
+      if (activeVcardFields.value.includes("address")) {
+        body.vcardStreet = vcardStreet.value.trim();
+        body.vcardCity = vcardCity.value.trim();
+        body.vcardZip = vcardZip.value.trim();
+        body.vcardCountry = vcardCountry.value.trim();
+      }
     } else if (qrType.value === "email") {
       body.email = emailAddress.value.trim();
       body.emailSubject = emailSubject.value.trim();
@@ -323,6 +415,16 @@ watch(
     telPhone,
     geoLat,
     geoLng,
+    vcardTitle,
+    vcardRole,
+    vcardUrl,
+    vcardNote,
+    vcardBirthday,
+    vcardStreet,
+    vcardCity,
+    vcardZip,
+    vcardCountry,
+    activeVcardFields,
     colorBackground,
     colorDotsStart,
     colorDotsEnd,
@@ -366,252 +468,388 @@ watch(
 
       <div class="grid grid-cols-1 lg:grid-cols-3">
         <div
-          class="p-5 lg:p-6 space-y-4 border-b lg:border-b-0 lg:border-r border-border flex flex-col"
+          class="lg:max-h-[min(800px,calc(100vh-100px))] flex flex-col border-b lg:border-b-0 lg:border-r border-border"
         >
-          <div class="space-y-2">
-            <Label for="qrType">QR type</Label>
-            <Select v-model="qrType">
-              <SelectTrigger id="qrType">
-                <SelectValue placeholder="Choose type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem v-for="t in QR_TYPES_ORDERED" :key="t" :value="t">
-                  {{ QR_TYPE_LABELS[t as QrType] }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <template v-if="qrType === 'wifi'">
-            <h2 class="text-lg font-semibold tracking-tight">Network</h2>
+          <div
+            class="p-5 lg:p-6 space-y-4 flex-1 overflow-y-auto min-h-0 custom-scrollbar"
+          >
             <div class="space-y-2">
-              <Label for="ssid">SSID (network name)</Label>
-              <Input
-                id="ssid"
-                v-model="ssid"
-                placeholder="e.g. MyNetwork"
-                required
-              />
-            </div>
-            <div class="space-y-2">
-              <Label for="encryption">Encryption</Label>
-              <Select v-model="encryption">
-                <SelectTrigger id="encryption">
-                  <SelectValue placeholder="Choose encryption" />
+              <Label for="qrType">QR type</Label>
+              <Select v-model="qrType">
+                <SelectTrigger id="qrType">
+                  <SelectValue placeholder="Choose type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="WPA">WPA / WPA2 / WPA3</SelectItem>
-                  <SelectItem value="WEP">WEP</SelectItem>
-                  <SelectItem value="nopass">None (open)</SelectItem>
+                  <SelectItem v-for="t in QR_TYPES_ORDERED" :key="t" :value="t">
+                    {{ QR_TYPE_LABELS[t as QrType] }}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div v-if="encryption !== 'nopass'" class="space-y-2">
-              <Label for="password">Password</Label>
-              <div class="relative">
+
+            <template v-if="qrType === 'wifi'">
+              <h2 class="text-lg font-semibold tracking-tight">Network</h2>
+              <div class="space-y-2">
+                <Label for="ssid">SSID (network name)</Label>
                 <Input
-                  id="password"
-                  v-model="password"
-                  :type="showPassword ? 'text' : 'password'"
-                  placeholder="Wi‑Fi password"
-                  class="pr-10"
+                  id="ssid"
+                  v-model="ssid"
+                  placeholder="e.g. MyNetwork"
+                  required
                 />
-                <button
-                  type="button"
-                  class="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  @click="showPassword = !showPassword"
-                >
-                  <Eye v-if="!showPassword" class="h-4 w-4" />
-                  <EyeOff v-else class="h-4 w-4" />
-                </button>
               </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <Checkbox id="hidden" v-model="isHidden" />
-              <Label for="hidden" class="text-sm font-normal cursor-pointer">
-                Hidden network
-              </Label>
-            </div>
-          </template>
+              <div class="space-y-2">
+                <Label for="encryption">Encryption</Label>
+                <Select v-model="encryption">
+                  <SelectTrigger id="encryption">
+                    <SelectValue placeholder="Choose encryption" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="WPA">WPA / WPA2 / WPA3</SelectItem>
+                    <SelectItem value="WEP">WEP</SelectItem>
+                    <SelectItem value="nopass">None (open)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div v-if="encryption !== 'nopass'" class="space-y-2">
+                <Label for="password">Password</Label>
+                <div class="relative">
+                  <Input
+                    id="password"
+                    v-model="password"
+                    :type="showPassword ? 'text' : 'password'"
+                    placeholder="Wi‑Fi password"
+                    class="pr-10"
+                  />
+                  <button
+                    type="button"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    @click="showPassword = !showPassword"
+                  >
+                    <Eye v-if="!showPassword" class="h-4 w-4" />
+                    <EyeOff v-else class="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <Checkbox id="hidden" v-model="isHidden" />
+                <Label for="hidden" class="text-sm font-normal cursor-pointer">
+                  Hidden network
+                </Label>
+              </div>
+            </template>
 
-          <template v-else-if="qrType === 'url'">
-            <h2 class="text-lg font-semibold tracking-tight">URL</h2>
-            <div class="space-y-2">
-              <Label for="url">Address</Label>
-              <Input
-                id="url"
-                v-model="urlContent"
-                type="url"
-                placeholder="https://example.com"
-              />
-            </div>
-          </template>
+            <template v-else-if="qrType === 'url'">
+              <h2 class="text-lg font-semibold tracking-tight">URL</h2>
+              <div class="space-y-2">
+                <Label for="url">Address</Label>
+                <Input
+                  id="url"
+                  v-model="urlContent"
+                  type="url"
+                  placeholder="https://example.com"
+                />
+              </div>
+            </template>
 
-          <template v-else-if="qrType === 'text'">
-            <h2 class="text-lg font-semibold tracking-tight">Text</h2>
-            <div class="space-y-2">
-              <Label for="text">Content</Label>
-              <textarea
-                id="text"
-                v-model="textContent"
-                placeholder="Any text for the QR code …"
-                rows="5"
-                class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
-              />
-            </div>
-          </template>
+            <template v-else-if="qrType === 'text'">
+              <h2 class="text-lg font-semibold tracking-tight">Text</h2>
+              <div class="space-y-2">
+                <Label for="text">Content</Label>
+                <textarea
+                  id="text"
+                  v-model="textContent"
+                  placeholder="Any text for the QR code …"
+                  rows="5"
+                  class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
+                />
+              </div>
+            </template>
 
-          <template v-else-if="qrType === 'vcard'">
-            <h2 class="text-lg font-semibold tracking-tight">Contact</h2>
-            <div class="space-y-2">
-              <Label for="vcardName">Name</Label>
-              <Input
-                id="vcardName"
-                v-model="vcardName"
-                placeholder="John Doe"
-              />
-            </div>
-            <div class="space-y-2">
-              <Label for="vcardPhone">Phone</Label>
-              <Input
-                id="vcardPhone"
-                v-model="vcardPhone"
-                type="tel"
-                placeholder="+1 234 567890"
-              />
-            </div>
-            <div class="space-y-2">
-              <Label for="vcardEmail">Email</Label>
-              <Input
-                id="vcardEmail"
-                v-model="vcardEmail"
-                type="email"
-                placeholder="john@example.com"
-              />
-            </div>
-            <div class="space-y-2">
-              <Label for="vcardOrg">Organization (optional)</Label>
-              <Input id="vcardOrg" v-model="vcardOrg" placeholder="Acme Inc." />
-            </div>
-          </template>
+            <template v-else-if="qrType === 'vcard'">
+              <h2 class="text-lg font-semibold tracking-tight">Contact</h2>
+              <div class="space-y-2">
+                <Label for="vcardName">Full Name</Label>
+                <Input
+                  id="vcardName"
+                  v-model="vcardName"
+                  placeholder="John Doe"
+                />
+              </div>
+              <div class="space-y-2">
+                <Label for="vcardPhone">Phone</Label>
+                <Input
+                  id="vcardPhone"
+                  v-model="vcardPhone"
+                  type="tel"
+                  placeholder="+1 234 567890"
+                />
+              </div>
+              <div class="space-y-2">
+                <Label for="vcardEmail">Email</Label>
+                <Input
+                  id="vcardEmail"
+                  v-model="vcardEmail"
+                  type="email"
+                  placeholder="john@example.com"
+                />
+              </div>
+              <div class="space-y-2">
+                <Label for="vcardOrg">Organization</Label>
+                <Input
+                  id="vcardOrg"
+                  v-model="vcardOrg"
+                  placeholder="Acme Inc."
+                />
+              </div>
 
-          <template v-else-if="qrType === 'email'">
-            <h2 class="text-lg font-semibold tracking-tight">Email</h2>
-            <div class="space-y-2">
-              <Label for="email">Email address</Label>
-              <Input
-                id="email"
-                v-model="emailAddress"
-                type="email"
-                placeholder="recipient@example.com"
-              />
-            </div>
-            <div class="space-y-2">
-              <Label for="emailSubject">Subject (optional)</Label>
-              <Input
-                id="emailSubject"
-                v-model="emailSubject"
-                placeholder="Subject line"
-              />
-            </div>
-            <div class="space-y-2">
-              <Label for="emailBody">Message (optional)</Label>
-              <textarea
-                id="emailBody"
-                v-model="emailBody"
-                placeholder="Pre-filled message …"
-                rows="3"
-                class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
-              />
-            </div>
-          </template>
+              <div v-if="activeVcardFields.length > 0" class="space-y-4 pt-2">
+                <div
+                  v-for="fieldId in activeVcardFields"
+                  :key="fieldId"
+                  class="space-y-2 relative"
+                >
+                  <div class="flex items-center justify-between">
+                    <Label :for="'vcard-' + fieldId">{{
+                      AVAILABLE_VCARD_FIELDS.find((f) => f.id === fieldId)
+                        ?.label
+                    }}</Label>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      class="h-8 w-8 text-muted-foreground hover:text-destructive"
+                      @click="removeVcardField(fieldId)"
+                    >
+                      <Trash2 class="h-4 w-4" />
+                    </Button>
+                  </div>
 
-          <template v-else-if="qrType === 'sms'">
-            <h2 class="text-lg font-semibold tracking-tight">SMS</h2>
-            <div class="space-y-2">
-              <Label for="smsPhone">Phone number</Label>
-              <Input
-                id="smsPhone"
-                v-model="smsPhone"
-                type="tel"
-                placeholder="+1 234 567890"
-              />
-            </div>
-            <div class="space-y-2">
-              <Label for="smsBody">Message (optional)</Label>
-              <Input
-                id="smsBody"
-                v-model="smsBody"
-                placeholder="Pre-filled message"
-              />
-            </div>
-          </template>
+                  <template v-if="fieldId === 'title'">
+                    <Input
+                      id="vcard-title"
+                      v-model="vcardTitle"
+                      placeholder="Software Engineer"
+                    />
+                  </template>
+                  <template v-else-if="fieldId === 'role'">
+                    <Input
+                      id="vcard-role"
+                      v-model="vcardRole"
+                      placeholder="Engineering"
+                    />
+                  </template>
+                  <template v-else-if="fieldId === 'url'">
+                    <Input
+                      id="vcard-url"
+                      v-model="vcardUrl"
+                      type="url"
+                      placeholder="https://example.com"
+                    />
+                  </template>
+                  <template v-else-if="fieldId === 'note'">
+                    <textarea
+                      id="vcard-note"
+                      v-model="vcardNote"
+                      placeholder="Additional information …"
+                      rows="2"
+                      class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
+                    />
+                  </template>
+                  <template v-else-if="fieldId === 'birthday'">
+                    <Input
+                      id="vcard-birthday"
+                      v-model="vcardBirthday"
+                      type="date"
+                    />
+                  </template>
+                  <template v-else-if="fieldId === 'address'">
+                    <div
+                      class="grid grid-cols-1 gap-2 border-l-2 border-muted pl-3 ml-1 mt-1"
+                    >
+                      <div class="space-y-1">
+                        <Label class="text-xs text-muted-foreground"
+                          >Street</Label
+                        >
+                        <Input
+                          v-model="vcardStreet"
+                          placeholder="Main St 123"
+                        />
+                      </div>
+                      <div class="grid grid-cols-2 gap-2">
+                        <div class="space-y-1">
+                          <Label class="text-xs text-muted-foreground"
+                            >ZIP</Label
+                          >
+                          <Input v-model="vcardZip" placeholder="12345" />
+                        </div>
+                        <div class="space-y-1">
+                          <Label class="text-xs text-muted-foreground"
+                            >City</Label
+                          >
+                          <Input v-model="vcardCity" placeholder="City" />
+                        </div>
+                      </div>
+                      <div class="space-y-1">
+                        <Label class="text-xs text-muted-foreground"
+                          >Country</Label
+                        >
+                        <Input v-model="vcardCountry" placeholder="Germany" />
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
 
-          <template v-else-if="qrType === 'tel'">
-            <h2 class="text-lg font-semibold tracking-tight">Phone</h2>
-            <div class="space-y-2">
-              <Label for="telPhone">Phone number</Label>
-              <Input
-                id="telPhone"
-                v-model="telPhone"
-                type="tel"
-                placeholder="+1 234 567890"
-              />
-            </div>
-          </template>
+              <div class="pt-2">
+                <Select @update:model-value="addVcardField">
+                  <SelectTrigger
+                    class="w-full border-dashed border-2 hover:border-primary hover:text-primary transition-colors text-muted-foreground"
+                  >
+                    <div class="flex items-center gap-2">
+                      <Plus class="h-4 w-4" />
+                      <span>Add field (Address, Job, Note...)</span>
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup
+                      v-for="group in ['Job', 'Location', 'Other']"
+                      :key="group"
+                    >
+                      <SelectLabel>{{ group }}</SelectLabel>
+                      <SelectItem
+                        v-for="field in AVAILABLE_VCARD_FIELDS.filter(
+                          (f) => f.group === group,
+                        )"
+                        :key="field.id"
+                        :value="field.id"
+                        :disabled="activeVcardFields.includes(field.id)"
+                      >
+                        {{ field.label }}
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </template>
 
-          <template v-else-if="qrType === 'geo'">
-            <h2 class="text-lg font-semibold tracking-tight">Location</h2>
-            <div class="space-y-2">
-              <Label for="geoLat">Latitude</Label>
-              <Input
-                id="geoLat"
-                v-model="geoLat"
-                type="text"
-                inputmode="decimal"
-                placeholder="53.551100"
-              />
-            </div>
-            <div class="space-y-2">
-              <Label for="geoLng">Longitude</Label>
-              <Input
-                id="geoLng"
-                v-model="geoLng"
-                type="text"
-                inputmode="decimal"
-                placeholder="9.993700"
-              />
-            </div>
-            <MapPickerDialog
-              :lat="geoLat"
-              :lng="geoLng"
-              @confirm="
-                (lat: string, lng: string) => {
-                  geoLat = lat;
-                  geoLng = lng;
-                }
-              "
-            />
-          </template>
+            <template v-else-if="qrType === 'email'">
+              <h2 class="text-lg font-semibold tracking-tight">Email</h2>
+              <div class="space-y-2">
+                <Label for="email">Email address</Label>
+                <Input
+                  id="email"
+                  v-model="emailAddress"
+                  type="email"
+                  placeholder="recipient@example.com"
+                />
+              </div>
+              <div class="space-y-2">
+                <Label for="emailSubject">Subject (optional)</Label>
+                <Input
+                  id="emailSubject"
+                  v-model="emailSubject"
+                  placeholder="Subject line"
+                />
+              </div>
+              <div class="space-y-2">
+                <Label for="emailBody">Message (optional)</Label>
+                <textarea
+                  id="emailBody"
+                  v-model="emailBody"
+                  placeholder="Pre-filled message …"
+                  rows="3"
+                  class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
+                />
+              </div>
+            </template>
 
-          <div class="flex-1" />
-          <p v-if="errorMessage" class="text-sm text-destructive">
-            {{ errorMessage }}
-          </p>
-          <Button
-            class="w-full"
-            size="lg"
-            :disabled="!canGenerate || generating"
-            @click="generate"
-          >
-            <Loader2 v-if="generating" class="mr-2 h-4 w-4 animate-spin" />
-            <QrCode v-else class="mr-2 h-4 w-4" />
-            {{ generating ? "Generating..." : "Generate QR code" }}
-          </Button>
+            <template v-else-if="qrType === 'sms'">
+              <h2 class="text-lg font-semibold tracking-tight">SMS</h2>
+              <div class="space-y-2">
+                <Label for="smsPhone">Phone number</Label>
+                <Input
+                  id="smsPhone"
+                  v-model="smsPhone"
+                  type="tel"
+                  placeholder="+1 234 567890"
+                />
+              </div>
+              <div class="space-y-2">
+                <Label for="smsBody">Message (optional)</Label>
+                <Input
+                  id="smsBody"
+                  v-model="smsBody"
+                  placeholder="Pre-filled message"
+                />
+              </div>
+            </template>
+
+            <template v-else-if="qrType === 'tel'">
+              <h2 class="text-lg font-semibold tracking-tight">Phone</h2>
+              <div class="space-y-2">
+                <Label for="telPhone">Phone number</Label>
+                <Input
+                  id="telPhone"
+                  v-model="telPhone"
+                  type="tel"
+                  placeholder="+1 234 567890"
+                />
+              </div>
+            </template>
+
+            <template v-else-if="qrType === 'geo'">
+              <h2 class="text-lg font-semibold tracking-tight">Location</h2>
+              <div class="space-y-2">
+                <Label for="geoLat">Latitude</Label>
+                <Input
+                  id="geoLat"
+                  v-model="geoLat"
+                  type="text"
+                  inputmode="decimal"
+                  placeholder="53.551100"
+                />
+              </div>
+              <div class="space-y-2">
+                <Label for="geoLng">Longitude</Label>
+                <Input
+                  id="geoLng"
+                  v-model="geoLng"
+                  type="text"
+                  inputmode="decimal"
+                  placeholder="9.993700"
+                />
+              </div>
+              <MapPickerDialog
+                :lat="geoLat"
+                :lng="geoLng"
+                @confirm="
+                  (lat: string, lng: string) => {
+                    geoLat = lat;
+                    geoLng = lng;
+                  }
+                "
+              />
+            </template>
+
+            <div class="flex-1" />
+            <p v-if="errorMessage" class="text-sm text-destructive">
+              {{ errorMessage }}
+            </p>
+            <Button
+              class="w-full"
+              size="lg"
+              :disabled="!canGenerate || generating"
+              @click="generate"
+            >
+              <Loader2 v-if="generating" class="mr-2 h-4 w-4 animate-spin" />
+              <QrCode v-else class="mr-2 h-4 w-4" />
+              {{ generating ? "Generating..." : "Generate QR code" }}
+            </Button>
+          </div>
         </div>
 
         <div
-          class="p-5 lg:p-6 flex flex-col items-center justify-center min-h-[350px] border-b lg:border-b-0 lg:border-r border-border gap-4"
+          class="lg:max-h-[min(800px,calc(100vh-100px))] p-5 lg:p-6 flex flex-col items-center justify-center min-h-[350px] border-b lg:border-b-0 lg:border-r border-border gap-4 bg-muted/30"
         >
           <template v-if="previewUrl">
             <img
@@ -635,182 +873,189 @@ watch(
           </template>
         </div>
 
-        <div class="p-5 lg:p-6 space-y-4">
-          <h2 class="text-lg font-semibold tracking-tight">Style</h2>
-          <div class="space-y-2">
-            <div class="flex items-center justify-between">
-              <Label class="text-sm text-muted-foreground">Colors</Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger as-child>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      class="h-7 w-7"
-                      @click="randomizeColors"
-                    >
-                      <Shuffle class="h-3.5 w-3.5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent><p>Random color scheme</p></TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+        <!-- Style Column -->
+        <div class="lg:max-h-[min(800px,calc(100vh-100px))] flex flex-col">
+          <div
+            class="p-5 lg:p-6 space-y-4 flex-1 overflow-y-auto custom-scrollbar"
+          >
+            <h2 class="text-lg font-semibold tracking-tight">Style</h2>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <Label class="text-sm text-muted-foreground">Colors</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger as-child>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        class="h-7 w-7"
+                        @click="randomizeColors"
+                      >
+                        <Shuffle class="h-3.5 w-3.5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent><p>Random color scheme</p></TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div class="grid grid-cols-5 gap-2">
+                <div class="space-y-1">
+                  <label
+                    for="colorBg"
+                    class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer"
+                    :style="{ backgroundColor: colorBackground }"
+                  >
+                    <input
+                      id="colorBg"
+                      v-model="colorBackground"
+                      type="color"
+                      class="sr-only"
+                    />
+                  </label>
+                  <span
+                    class="text-[10px] text-muted-foreground text-center block"
+                    >Background</span
+                  >
+                </div>
+                <div class="space-y-1">
+                  <label
+                    for="colorDs"
+                    class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer"
+                    :style="{ backgroundColor: colorDotsStart }"
+                  >
+                    <input
+                      id="colorDs"
+                      v-model="colorDotsStart"
+                      type="color"
+                      class="sr-only"
+                    />
+                  </label>
+                  <span
+                    class="text-[10px] text-muted-foreground text-center block"
+                    >Dots 1</span
+                  >
+                </div>
+                <div class="space-y-1">
+                  <label
+                    for="colorDe"
+                    class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer"
+                    :style="{ backgroundColor: colorDotsEnd }"
+                  >
+                    <input
+                      id="colorDe"
+                      v-model="colorDotsEnd"
+                      type="color"
+                      class="sr-only"
+                    />
+                  </label>
+                  <span
+                    class="text-[10px] text-muted-foreground text-center block"
+                    >Dots 2</span
+                  >
+                </div>
+                <div class="space-y-1">
+                  <label
+                    for="colorCo"
+                    class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer"
+                    :style="{ backgroundColor: colorCorners }"
+                  >
+                    <input
+                      id="colorCo"
+                      v-model="colorCorners"
+                      type="color"
+                      class="sr-only"
+                    />
+                  </label>
+                  <span
+                    class="text-[10px] text-muted-foreground text-center block"
+                    >Corners</span
+                  >
+                </div>
+                <div class="space-y-1">
+                  <label
+                    for="colorTx"
+                    class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer"
+                    :style="{ backgroundColor: colorText }"
+                  >
+                    <input
+                      id="colorTx"
+                      v-model="colorText"
+                      type="color"
+                      class="sr-only"
+                    />
+                  </label>
+                  <span
+                    class="text-[10px] text-muted-foreground text-center block"
+                    >Text</span
+                  >
+                </div>
+              </div>
             </div>
-            <div class="grid grid-cols-5 gap-2">
-              <div class="space-y-1">
-                <label
-                  for="colorBg"
-                  class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer"
-                  :style="{ backgroundColor: colorBackground }"
-                >
-                  <input
-                    id="colorBg"
-                    v-model="colorBackground"
-                    type="color"
-                    class="sr-only"
-                  />
-                </label>
-                <span
-                  class="text-[10px] text-muted-foreground text-center block"
-                  >Background</span
-                >
-              </div>
-              <div class="space-y-1">
-                <label
-                  for="colorDs"
-                  class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer"
-                  :style="{ backgroundColor: colorDotsStart }"
-                >
-                  <input
-                    id="colorDs"
-                    v-model="colorDotsStart"
-                    type="color"
-                    class="sr-only"
-                  />
-                </label>
-                <span
-                  class="text-[10px] text-muted-foreground text-center block"
-                  >Dots 1</span
-                >
-              </div>
-              <div class="space-y-1">
-                <label
-                  for="colorDe"
-                  class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer"
-                  :style="{ backgroundColor: colorDotsEnd }"
-                >
-                  <input
-                    id="colorDe"
-                    v-model="colorDotsEnd"
-                    type="color"
-                    class="sr-only"
-                  />
-                </label>
-                <span
-                  class="text-[10px] text-muted-foreground text-center block"
-                  >Dots 2</span
-                >
-              </div>
-              <div class="space-y-1">
-                <label
-                  for="colorCo"
-                  class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer"
-                  :style="{ backgroundColor: colorCorners }"
-                >
-                  <input
-                    id="colorCo"
-                    v-model="colorCorners"
-                    type="color"
-                    class="sr-only"
-                  />
-                </label>
-                <span
-                  class="text-[10px] text-muted-foreground text-center block"
-                  >Corners</span
-                >
-              </div>
-              <div class="space-y-1">
-                <label
-                  for="colorTx"
-                  class="block w-full aspect-square rounded-md border border-border overflow-hidden cursor-pointer"
-                  :style="{ backgroundColor: colorText }"
-                >
-                  <input
-                    id="colorTx"
-                    v-model="colorText"
-                    type="color"
-                    class="sr-only"
-                  />
-                </label>
-                <span
-                  class="text-[10px] text-muted-foreground text-center block"
-                  >Text</span
-                >
-              </div>
+            <div class="space-y-2">
+              <Label for="dotsType">Dot style</Label>
+              <Select v-model="dotsType">
+                <SelectTrigger id="dotsType"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="rounded">Rounded</SelectItem>
+                  <SelectItem value="dots">Dots</SelectItem>
+                  <SelectItem value="extra-rounded">Extra Rounded</SelectItem>
+                  <SelectItem value="classy">Classy</SelectItem>
+                  <SelectItem value="classy-rounded">Classy Rounded</SelectItem>
+                  <SelectItem value="square">Square</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          </div>
-          <div class="space-y-2">
-            <Label for="dotsType">Dot style</Label>
-            <Select v-model="dotsType">
-              <SelectTrigger id="dotsType"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="rounded">Rounded</SelectItem>
-                <SelectItem value="dots">Dots</SelectItem>
-                <SelectItem value="extra-rounded">Extra Rounded</SelectItem>
-                <SelectItem value="classy">Classy</SelectItem>
-                <SelectItem value="classy-rounded">Classy Rounded</SelectItem>
-                <SelectItem value="square">Square</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div class="space-y-2">
-            <Label for="cornersSquare">Outer corners</Label>
-            <Select v-model="cornersSquareType">
-              <SelectTrigger id="cornersSquare"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="extra-rounded">Extra Rounded</SelectItem>
-                <SelectItem value="square">Square</SelectItem>
-                <SelectItem value="dot">Dot</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div class="space-y-2">
-            <Label for="cornersDot">Inner corners</Label>
-            <Select v-model="cornersDotType">
-              <SelectTrigger id="cornersDot"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dot">Dot</SelectItem>
-                <SelectItem value="square">Square</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div class="space-y-2">
-            <Label for="imageSize">Image size</Label>
-            <Select v-model="imageSize">
-              <SelectTrigger id="imageSize"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem :value="600">600 px</SelectItem>
-                <SelectItem :value="900">900 px</SelectItem>
-                <SelectItem :value="1200">1200 px</SelectItem>
-                <SelectItem :value="1500">1500 px</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div class="space-y-2">
-            <Label>Padding: {{ qrMargin }}</Label>
-            <Slider
-              v-model="qrMarginArr"
-              :min="0"
-              :max="80"
-              :step="1"
-              class="mt-2"
-            />
-          </div>
-          <div class="flex items-center gap-2">
-            <Checkbox id="showInfo" v-model="showInfoInImage" />
-            <Label for="showInfo" class="text-sm font-normal cursor-pointer"
-              >Show info text</Label
-            >
+            <div class="space-y-2">
+              <Label for="cornersSquare">Outer corners</Label>
+              <Select v-model="cornersSquareType">
+                <SelectTrigger id="cornersSquare"
+                  ><SelectValue
+                /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="extra-rounded">Extra Rounded</SelectItem>
+                  <SelectItem value="square">Square</SelectItem>
+                  <SelectItem value="dot">Dot</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div class="space-y-2">
+              <Label for="cornersDot">Inner corners</Label>
+              <Select v-model="cornersDotType">
+                <SelectTrigger id="cornersDot"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="dot">Dot</SelectItem>
+                  <SelectItem value="square">Square</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div class="space-y-2">
+              <Label for="imageSize">Image size</Label>
+              <Select v-model="imageSize">
+                <SelectTrigger id="imageSize"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem :value="600">600 px</SelectItem>
+                  <SelectItem :value="900">900 px</SelectItem>
+                  <SelectItem :value="1200">1200 px</SelectItem>
+                  <SelectItem :value="1500">1500 px</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div class="space-y-2">
+              <Label>Padding: {{ qrMargin }}</Label>
+              <Slider
+                v-model="qrMarginArr"
+                :min="0"
+                :max="80"
+                :step="1"
+                class="mt-2"
+              />
+            </div>
+            <div class="flex items-center gap-2">
+              <Checkbox id="showInfo" v-model="showInfoInImage" />
+              <Label for="showInfo" class="text-sm font-normal cursor-pointer"
+                >Show info text</Label
+              >
+            </div>
           </div>
         </div>
       </div>

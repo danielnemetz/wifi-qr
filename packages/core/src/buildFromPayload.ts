@@ -17,7 +17,21 @@ import { resolveStyle } from './config';
 export type WifiPayload = { ssid: string; password?: string; encryption: WifiEncryption; isHidden: boolean };
 export type UrlPayload = { url: string };
 export type TextPayload = { text: string };
-export type VcardPayload = { name: string; phone?: string; email?: string; org?: string };
+export type VcardPayload = {
+  name: string;
+  phone?: string;
+  email?: string;
+  org?: string;
+  url?: string;
+  note?: string;
+  title?: string;
+  role?: string;
+  birthday?: string;
+  street?: string;
+  city?: string;
+  zip?: string;
+  country?: string;
+};
 export type EmailPayload = { email: string; subject?: string; body?: string };
 export type SmsPayload = { phone: string; body?: string };
 export type TelPayload = { phone: string };
@@ -99,6 +113,15 @@ export function buildQrPayload(type: QrType, payload: Payload): QrPayloadResult 
       phone: p.phone || undefined,
       email: p.email || undefined,
       org: p.org || undefined,
+      url: p.url || undefined,
+      note: p.note || undefined,
+      title: p.title || undefined,
+      role: p.role || undefined,
+      birthday: p.birthday || undefined,
+      street: p.street || undefined,
+      city: p.city || undefined,
+      zip: p.zip || undefined,
+      country: p.country || undefined,
     });
     filename = name.replace(/[^a-zA-Z0-9_-]/g, '_') || 'vcard';
   } else if (type === 'email') {

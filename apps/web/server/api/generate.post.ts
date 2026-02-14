@@ -64,7 +64,21 @@ export default defineEventHandler(async (event) => {
     if (!name && !phone && !email) {
       throw createError({ statusCode: 400, statusMessage: 'Name, phone or email is required' });
     }
-    payload = { name, phone, email, org };
+    payload = {
+      name,
+      phone,
+      email,
+      org,
+      url: body.vcardUrl ? String(body.vcardUrl).trim() : undefined,
+      note: body.vcardNote ? String(body.vcardNote).trim() : undefined,
+      title: body.vcardTitle ? String(body.vcardTitle).trim() : undefined,
+      role: body.vcardRole ? String(body.vcardRole).trim() : undefined,
+      birthday: body.vcardBirthday ? String(body.vcardBirthday).trim() : undefined,
+      street: body.vcardStreet ? String(body.vcardStreet).trim() : undefined,
+      city: body.vcardCity ? String(body.vcardCity).trim() : undefined,
+      zip: body.vcardZip ? String(body.vcardZip).trim() : undefined,
+      country: body.vcardCountry ? String(body.vcardCountry).trim() : undefined,
+    };
   } else if (type === 'email') {
     const email = String(body.email ?? '').trim();
     if (!email) throw createError({ statusCode: 400, statusMessage: 'Email is required' });
