@@ -344,10 +344,10 @@ watch(
 </script>
 
 <template>
-  <div
-    class="min-h-screen bg-muted flex items-center justify-center p-4 lg:p-6"
-  >
-    <Card class="w-full max-w-7xl shadow-lg rounded-xl relative">
+  <div class="min-h-screen bg-muted flex items-center justify-center lg:p-6">
+    <Card
+      class="w-full lg:max-w-7xl shadow-lg rounded-none lg:rounded-xl relative"
+    >
       <Button
         variant="ghost"
         size="icon"
@@ -364,9 +364,9 @@ watch(
         />
       </Button>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div class="grid grid-cols-1 lg:grid-cols-3">
         <div
-          class="p-5 lg:p-6 space-y-4 border-b md:border-b-0 md:border-r border-border flex flex-col"
+          class="p-5 lg:p-6 space-y-4 border-b lg:border-b-0 lg:border-r border-border flex flex-col"
         >
           <div class="space-y-2">
             <Label for="qrType">QR type</Label>
@@ -601,7 +601,7 @@ watch(
         </div>
 
         <div
-          class="p-5 lg:p-6 flex flex-col items-center justify-center min-h-[350px] border-b md:border-b-0 md:border-r border-border gap-4"
+          class="p-5 lg:p-6 flex flex-col items-center justify-center min-h-[350px] border-b lg:border-b-0 lg:border-r border-border gap-4"
         >
           <template v-if="previewUrl">
             <img
@@ -625,7 +625,7 @@ watch(
           </template>
         </div>
 
-        <div class="p-5 lg:p-6 space-y-4 md:col-span-2 lg:col-span-1">
+        <div class="p-5 lg:p-6 space-y-4">
           <h2 class="text-lg font-semibold tracking-tight">Style</h2>
           <div class="space-y-2">
             <div class="flex items-center justify-between">
