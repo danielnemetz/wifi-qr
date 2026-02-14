@@ -1,5 +1,5 @@
 {
-  "name": "wifi-qr-web-prod",
+  "name": "@qr/web-prod",
   "version": "0.0.0",
   "type": "module",
   "private": true,

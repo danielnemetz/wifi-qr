@@ -1,13 +1,13 @@
 {
-  "name": "wifi-qr-monorepo",
+  "name": "qr-monorepo",
   "private": true,
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test",
-    "dev:web": "pnpm --filter wifi-qr-web dev",
-    "build:web": "pnpm --filter wifi-qr-web build",
-    "start:cli": "pnpm --filter @wifi-qr/cli start",
-    "build:cli": "pnpm --filter @wifi-qr/cli build"
+    "dev:web": "pnpm --filter @qr/web dev",
+    "build:web": "pnpm --filter @qr/web build",
+    "start:cli": "pnpm --filter @qr/cli start",
+    "build:cli": "pnpm --filter @qr/cli build"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

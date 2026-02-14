@@ -20,7 +20,7 @@ importers:
       '@inquirer/prompts':
         specifier: ^8.2.0
         version: 8.2.0(@types/node@25.2.3)
-      '@wifi-qr/core':
+      '@qr/core':
         specifier: workspace:*
         version: link:../../packages/core
     devDependencies:
@@ -39,7 +39,7 @@ importers:
       '@nuxtjs/color-mode':
         specifier: ^4.0.0
         version: 4.0.0(magicast@0.5.2)
-      '@wifi-qr/core':
+      '@qr/core':
         specifier: workspace:*
         version: link:../../packages/core
       canvas:

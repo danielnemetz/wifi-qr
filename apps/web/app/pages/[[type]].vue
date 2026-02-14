@@ -23,7 +23,7 @@ import {
   type SmsPayload,
   type TelPayload,
   type GeoPayload,
-} from "@wifi-qr/core";
+} from "@qr/core";
 import { QR_TYPE_CHOICES, QR_TYPES_ORDERED } from "~/utils/constants";
 const route = useRoute();
 const colorMode = useColorMode();

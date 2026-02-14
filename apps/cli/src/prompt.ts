@@ -1,6 +1,6 @@
-import { config, QR_TYPE_CHOICES } from '@wifi-qr/core';
+import { QR_TYPE_CHOICES, parseNum } from '@qr/core';
+import type { QrType, Payload } from '@qr/core';
 import type {
-  QrType,
   WifiEncryption,
   WifiPayload,
   UrlPayload,
@@ -10,7 +10,7 @@ import type {
   SmsPayload,
   TelPayload,
   GeoPayload,
-} from '@wifi-qr/core';
+} from '@qr/core';
 
 
 const clearPwd = process.argv.includes('--clear-pwd');

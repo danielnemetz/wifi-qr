@@ -27,6 +27,8 @@ interface _GlobalComponents {
   NuxtImg: typeof import("../../../../node_modules/.pnpm/nuxt@4.3.1_@parcel+watcher@2.5.6_@types+node@25.2.3_@vue+compiler-sfc@3.5.28_cac@6.7.14_c85b317623302b2c94f9e67d617f59ce/node_modules/nuxt/dist/app/components/nuxt-stubs")['NuxtImg']
   NuxtPicture: typeof import("../../../../node_modules/.pnpm/nuxt@4.3.1_@parcel+watcher@2.5.6_@types+node@25.2.3_@vue+compiler-sfc@3.5.28_cac@6.7.14_c85b317623302b2c94f9e67d617f59ce/node_modules/nuxt/dist/app/components/nuxt-stubs")['NuxtPicture']
   Button: typeof import("../../app/components/ui/button/index")['Button']
+  Checkbox: typeof import("../../app/components/ui/checkbox/index")['Checkbox']
+  Label: typeof import("../../app/components/ui/label/index")['Label']
   Card: typeof import("../../app/components/ui/card/index")['Card']
   CardAction: typeof import("../../app/components/ui/card/index")['CardAction']
   CardContent: typeof import("../../app/components/ui/card/index")['CardContent']
@@ -34,9 +36,8 @@ interface _GlobalComponents {
   CardFooter: typeof import("../../app/components/ui/card/index")['CardFooter']
   CardHeader: typeof import("../../app/components/ui/card/index")['CardHeader']
   CardTitle: typeof import("../../app/components/ui/card/index")['CardTitle']
-  Checkbox: typeof import("../../app/components/ui/checkbox/index")['Checkbox']
   Input: typeof import("../../app/components/ui/input/index")['Input']
-  Label: typeof import("../../app/components/ui/label/index")['Label']
+  Separator: typeof import("../../app/components/ui/separator/index")['Separator']
   Select: typeof import("../../app/components/ui/select/index")['Select']
   SelectContent: typeof import("../../app/components/ui/select/index")['SelectContent']
   SelectGroup: typeof import("../../app/components/ui/select/index")['SelectGroup']
@@ -48,12 +49,11 @@ interface _GlobalComponents {
   SelectSeparator: typeof import("../../app/components/ui/select/index")['SelectSeparator']
   SelectTrigger: typeof import("../../app/components/ui/select/index")['SelectTrigger']
   SelectValue: typeof import("../../app/components/ui/select/index")['SelectValue']
-  Separator: typeof import("../../app/components/ui/separator/index")['Separator']
+  Slider: typeof import("../../app/components/ui/slider/index")['Slider']
   Tooltip: typeof import("../../app/components/ui/tooltip/index")['Tooltip']
   TooltipContent: typeof import("../../app/components/ui/tooltip/index")['TooltipContent']
   TooltipProvider: typeof import("../../app/components/ui/tooltip/index")['TooltipProvider']
   TooltipTrigger: typeof import("../../app/components/ui/tooltip/index")['TooltipTrigger']
-  Slider: typeof import("../../app/components/ui/slider/index")['Slider']
   ColorScheme: typeof import("../../../../node_modules/.pnpm/@nuxtjs+color-mode@4.0.0_magicast@0.5.2/node_modules/@nuxtjs/color-mode/dist/runtime/component.vue")['default']
   NuxtPage: typeof import("../../../../node_modules/.pnpm/nuxt@4.3.1_@parcel+watcher@2.5.6_@types+node@25.2.3_@vue+compiler-sfc@3.5.28_cac@6.7.14_c85b317623302b2c94f9e67d617f59ce/node_modules/nuxt/dist/pages/runtime/page")['default']
   NoScript: typeof import("../../../../node_modules/.pnpm/nuxt@4.3.1_@parcel+watcher@2.5.6_@types+node@25.2.3_@vue+compiler-sfc@3.5.28_cac@6.7.14_c85b317623302b2c94f9e67d617f59ce/node_modules/nuxt/dist/head/runtime/components")['NoScript']
@@ -79,6 +79,8 @@ interface _GlobalComponents {
   LazyNuxtImg: LazyComponent<typeof import("../../../../node_modules/.pnpm/nuxt@4.3.1_@parcel+watcher@2.5.6_@types+node@25.2.3_@vue+compiler-sfc@3.5.28_cac@6.7.14_c85b317623302b2c94f9e67d617f59ce/node_modules/nuxt/dist/app/components/nuxt-stubs")['NuxtImg']>
   LazyNuxtPicture: LazyComponent<typeof import("../../../../node_modules/.pnpm/nuxt@4.3.1_@parcel+watcher@2.5.6_@types+node@25.2.3_@vue+compiler-sfc@3.5.28_cac@6.7.14_c85b317623302b2c94f9e67d617f59ce/node_modules/nuxt/dist/app/components/nuxt-stubs")['NuxtPicture']>
   LazyButton: LazyComponent<typeof import("../../app/components/ui/button/index")['Button']>
+  LazyCheckbox: LazyComponent<typeof import("../../app/components/ui/checkbox/index")['Checkbox']>
+  LazyLabel: LazyComponent<typeof import("../../app/components/ui/label/index")['Label']>
   LazyCard: LazyComponent<typeof import("../../app/components/ui/card/index")['Card']>
   LazyCardAction: LazyComponent<typeof import("../../app/components/ui/card/index")['CardAction']>
   LazyCardContent: LazyComponent<typeof import("../../app/components/ui/card/index")['CardContent']>
@@ -86,9 +88,8 @@ interface _GlobalComponents {
   LazyCardFooter: LazyComponent<typeof import("../../app/components/ui/card/index")['CardFooter']>
   LazyCardHeader: LazyComponent<typeof import("../../app/components/ui/card/index")['CardHeader']>
   LazyCardTitle: LazyComponent<typeof import("../../app/components/ui/card/index")['CardTitle']>
-  LazyCheckbox: LazyComponent<typeof import("../../app/components/ui/checkbox/index")['Checkbox']>
   LazyInput: LazyComponent<typeof import("../../app/components/ui/input/index")['Input']>
-  LazyLabel: LazyComponent<typeof import("../../app/components/ui/label/index")['Label']>
+  LazySeparator: LazyComponent<typeof import("../../app/components/ui/separator/index")['Separator']>
   LazySelect: LazyComponent<typeof import("../../app/components/ui/select/index")['Select']>
   LazySelectContent: LazyComponent<typeof import("../../app/components/ui/select/index")['SelectContent']>
   LazySelectGroup: LazyComponent<typeof import("../../app/components/ui/select/index")['SelectGroup']>
@@ -100,12 +101,11 @@ interface _GlobalComponents {
   LazySelectSeparator: LazyComponent<typeof import("../../app/components/ui/select/index")['SelectSeparator']>
   LazySelectTrigger: LazyComponent<typeof import("../../app/components/ui/select/index")['SelectTrigger']>
   LazySelectValue: LazyComponent<typeof import("../../app/components/ui/select/index")['SelectValue']>
-  LazySeparator: LazyComponent<typeof import("../../app/components/ui/separator/index")['Separator']>
+  LazySlider: LazyComponent<typeof import("../../app/components/ui/slider/index")['Slider']>
   LazyTooltip: LazyComponent<typeof import("../../app/components/ui/tooltip/index")['Tooltip']>
   LazyTooltipContent: LazyComponent<typeof import("../../app/components/ui/tooltip/index")['TooltipContent']>
   LazyTooltipProvider: LazyComponent<typeof import("../../app/components/ui/tooltip/index")['TooltipProvider']>
   LazyTooltipTrigger: LazyComponent<typeof import("../../app/components/ui/tooltip/index")['TooltipTrigger']>
-  LazySlider: LazyComponent<typeof import("../../app/components/ui/slider/index")['Slider']>
   LazyColorScheme: LazyComponent<typeof import("../../../../node_modules/.pnpm/@nuxtjs+color-mode@4.0.0_magicast@0.5.2/node_modules/@nuxtjs/color-mode/dist/runtime/component.vue")['default']>
   LazyNuxtPage: LazyComponent<typeof import("../../../../node_modules/.pnpm/nuxt@4.3.1_@parcel+watcher@2.5.6_@types+node@25.2.3_@vue+compiler-sfc@3.5.28_cac@6.7.14_c85b317623302b2c94f9e67d617f59ce/node_modules/nuxt/dist/pages/runtime/page")['default']>
   LazyNoScript: LazyComponent<typeof import("../../../../node_modules/.pnpm/nuxt@4.3.1_@parcel+watcher@2.5.6_@types+node@25.2.3_@vue+compiler-sfc@3.5.28_cac@6.7.14_c85b317623302b2c94f9e67d617f59ce/node_modules/nuxt/dist/head/runtime/components")['NoScript']>

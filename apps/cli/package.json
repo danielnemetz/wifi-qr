@@ -1,5 +1,5 @@
 {
-  "name": "@wifi-qr/cli",
+  "name": "@qr/cli",
   "version": "1.0.0",
   "private": true,
   "bin": {
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@inquirer/prompts": "^8.2.0",
-    "@wifi-qr/core": "workspace:*"
+    "@qr/core": "workspace:*"
   },
   "devDependencies": {
     "tsx": "^4.21.0",

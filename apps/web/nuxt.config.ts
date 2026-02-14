@@ -37,6 +37,6 @@ export default defineNuxtConfig({
   },
 
   build: {
-    transpile: ['@wifi-qr/core'],
+    transpile: ['@qr/core'],
   },
 })

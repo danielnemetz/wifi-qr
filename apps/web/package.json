@@ -1,5 +1,5 @@
 {
-  "name": "wifi-qr-web",
+  "name": "@qr/web",
   "private": true,
   "type": "module",
   "scripts": {
@@ -24,7 +24,7 @@
     "clsx": "^2.1.1",
     "lucide-vue-next": "^0.564.0",
     "nuxt": "^4.3.1",
-    "@wifi-qr/core": "workspace:*",
+    "@qr/core": "workspace:*",
     "reka-ui": "^2.8.0",
     "tailwind-merge": "^3.4.0",
     "vue": "^3.5.28",

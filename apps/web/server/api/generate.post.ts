@@ -1,3 +1,4 @@
+
 import {
   composeImageBuffer,
   buildQrPayload,
@@ -13,7 +14,7 @@ import {
   type GeoPayload,
   type WifiEncryption,
   type StyleConfig
-} from '@wifi-qr/core';
+} from '@qr/core';
 
 
 export default defineEventHandler(async (event) => {

@@ -5,7 +5,7 @@ import { resolve, dirname, join } from 'node:path';
 import nodeCrypto from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
 import { escapeHtml } from 'file:///Users/daniel/Projects/qr/node_modules/.pnpm/@vue+shared@3.5.28/node_modules/@vue/shared/dist/shared.cjs.js';
-import { parseType, parseNum, buildQrPayload, composeImageBuffer } from '@wifi-qr/core';
+import { parseType, parseNum, buildQrPayload, composeImageBuffer } from '@qr/core';
 import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file:///Users/daniel/Projects/qr/node_modules/.pnpm/vue-bundle-renderer@2.2.0/node_modules/vue-bundle-renderer/dist/runtime.mjs';
 import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, joinRelativeURL } from 'file:///Users/daniel/Projects/qr/node_modules/.pnpm/ufo@1.6.3/node_modules/ufo/dist/index.mjs';
 import destr, { destr as destr$1 } from 'file:///Users/daniel/Projects/qr/node_modules/.pnpm/destr@2.0.5/node_modules/destr/dist/index.mjs';
@@ -2147,7 +2147,22 @@ _GyOHhqVGxAX8fRwPC1rYTf9YHZSR1saoJG4ZaDh84bY,
 _amOz0fwvcW7JsI4n6YA9DBKXOxXnilH1PIphRjhLBbQ
 ];
 
-const assets = {};
+const assets = {
+  "/index.mjs": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"1b395-r6rEzoBOGboxp02AsjHJs4AQxUI\"",
+    "mtime": "2026-02-14T09:36:31.943Z",
+    "size": 111509,
+    "path": "index.mjs"
+  },
+  "/index.mjs.map": {
+    "type": "application/json",
+    "etag": "\"6e317-2B0nuaAnCX46fL1Xz/s5FVJXBqw\"",
+    "mtime": "2026-02-14T09:36:31.943Z",
+    "size": 451351,
+    "path": "index.mjs.map"
+  }
+};
 
 function readAsset (id) {
   const serverDir = dirname$1(fileURLToPath(globalThis._importMeta_.url));

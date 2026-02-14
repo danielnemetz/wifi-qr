@@ -4,6 +4,9 @@ dist/
 !ExampleSSID.png
 
 # Nuxt
-web/.nuxt/
-web/.output/
-web/node_modules/
+apps/web/.nuxt/
+apps/web/.output/
+apps/web/node_modules/
+
+# Core build output
+packages/core/dist/

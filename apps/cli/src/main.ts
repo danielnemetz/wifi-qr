@@ -1,6 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { config, buildQrPayload, composeImageBuffer } from '@wifi-qr/core';
+import {
+  type QrType,
+  QR_TYPES,
+  buildQrPayload,
+  parseType,
+  config,
+  composeImageBuffer,
+} from '@qr/core';
 import { promptConfig } from './prompt';
 
 promptConfig()

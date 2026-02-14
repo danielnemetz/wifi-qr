@@ -1,4 +1,4 @@
-# WiFi-QR Web Interface
+# QR Web Interface
 
 Browser-based tool for generating styled QR codes. Supports multiple types (Wi‑Fi, URL, text, contact, email, SMS, phone, location) with live preview and customizable style.
 
@@ -9,7 +9,7 @@ Browser-based tool for generating styled QR codes. Supports multiple types (Wi�
 pnpm dev:web
 
 # Or from the web folder
-cd web && pnpm dev
+cd apps/web && pnpm dev
 ```
 
 The app runs at [http://localhost:3000](http://localhost:3000) by default.
@@ -17,7 +17,7 @@ The app runs at [http://localhost:3000](http://localhost:3000) by default.
 ## Production build
 
 ```bash
-cd web && pnpm build
+cd apps/web && pnpm build
 ```
 
 Preview the build: `pnpm preview`.
@@ -26,16 +26,16 @@ Preview the build: `pnpm preview`.
 
 Types are listed in alphabetical order; the first is the default when visiting `/`.
 
-| Type     | Route    | Content / form |
-|----------|----------|----------------|
-| Email    | `/email` | Email address, optional subject and message → `mailto:...` |
-| Location | `/geo`   | Latitude and longitude → `geo:lat,lng` |
-| SMS      | `/sms`   | Phone number, optional message → `sms:...?body=...` |
-| Phone    | `/tel`   | Phone number → `tel:...` |
-| Text     | `/text`  | Plain text (multiline) |
-| URL      | `/url`   | Web address |
-| Contact (vCard) | `/vcard` | Name, phone, email, optional organization → vCard 3.0 |
-| Wi‑Fi    | `/wifi`  | SSID, encryption, password, hidden network → `WIFI:S:...;T:...;P:...;;` |
+| Type            | Route    | Content / form                                                          |
+| --------------- | -------- | ----------------------------------------------------------------------- |
+| Email           | `/email` | Email address, optional subject and message → `mailto:...`              |
+| Location        | `/geo`   | Latitude and longitude → `geo:lat,lng`                                  |
+| SMS             | `/sms`   | Phone number, optional message → `sms:...?body=...`                     |
+| Phone           | `/tel`   | Phone number → `tel:...`                                                |
+| Text            | `/text`  | Plain text (multiline)                                                  |
+| URL             | `/url`   | Web address                                                             |
+| Contact (vCard) | `/vcard` | Name, phone, email, optional organization → vCard 3.0                   |
+| Wi‑Fi           | `/wifi`  | SSID, encryption, password, hidden network → `WIFI:S:...;T:...;P:...;;` |
 
 Minimum required per type: for vCard, at least name, phone, or email; for location, both coordinates; for all others, the respective required field.
 
