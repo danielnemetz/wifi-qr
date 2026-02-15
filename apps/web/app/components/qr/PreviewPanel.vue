@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Download, FileText, QrCode, Loader2 } from 'lucide-vue-next'
 
+const { t } = useI18n()
+
 defineProps<{
   previewUrl: string | null
   generating: boolean
@@ -40,8 +42,8 @@ const emit = defineEmits<{
       <div class="flex flex-col items-center gap-3 text-muted-foreground">
         <QrCode class="h-16 w-16 opacity-20" />
         <p class="text-sm text-center">
-          {{ emptyStateHint }} and click<br />
-          <strong>Generate QR code</strong>.
+          {{ t('preview.emptyHint', { hint: emptyStateHint }) }}<br />
+          <strong>{{ t('preview.emptyAction') }}</strong>.
         </p>
       </div>
     </template>

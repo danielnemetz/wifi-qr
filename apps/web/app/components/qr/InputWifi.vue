@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Eye, EyeOff } from 'lucide-vue-next'
 
+const { t } = useI18n()
+
 const ssid = defineModel<string>('ssid', { required: true })
 const encryption = defineModel<string>('encryption', { required: true })
 const password = defineModel<string>('password', { required: true })
@@ -10,32 +12,32 @@ const showPassword = ref(false)
 </script>
 
 <template>
-  <h2 class="text-lg font-semibold tracking-tight">Network</h2>
+  <h2 class="text-lg font-semibold tracking-tight">{{ t('wifi.title') }}</h2>
   <div class="space-y-2">
-    <Label for="ssid">SSID (network name)</Label>
-    <Input id="ssid" v-model="ssid" placeholder="e.g. MyNetwork" required />
+    <Label for="ssid">{{ t('wifi.ssid') }}</Label>
+    <Input id="ssid" v-model="ssid" :placeholder="t('wifi.ssidPlaceholder')" required />
   </div>
   <div class="space-y-2">
-    <Label for="encryption">Encryption</Label>
+    <Label for="encryption">{{ t('wifi.encryption') }}</Label>
     <Select v-model="encryption">
       <SelectTrigger id="encryption">
-        <SelectValue placeholder="Choose encryption" />
+        <SelectValue :placeholder="t('wifi.chooseCrypto')" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="WPA">WPA / WPA2 / WPA3</SelectItem>
-        <SelectItem value="WEP">WEP</SelectItem>
-        <SelectItem value="nopass">None (open)</SelectItem>
+        <SelectItem value="WPA">{{ t('wifi.wpa') }}</SelectItem>
+        <SelectItem value="WEP">{{ t('wifi.wep') }}</SelectItem>
+        <SelectItem value="nopass">{{ t('wifi.none') }}</SelectItem>
       </SelectContent>
     </Select>
   </div>
   <div v-if="encryption !== 'nopass'" class="space-y-2">
-    <Label for="password">Password</Label>
+    <Label for="password">{{ t('wifi.password') }}</Label>
     <div class="relative">
       <Input
         id="password"
         v-model="password"
         :type="showPassword ? 'text' : 'password'"
-        placeholder="Wi‑Fi password"
+        :placeholder="t('wifi.passwordPlaceholder')"
         class="pr-10"
       />
       <button
@@ -51,7 +53,7 @@ const showPassword = ref(false)
   <div class="flex items-center gap-2">
     <Checkbox id="hidden" v-model="isHidden" />
     <Label for="hidden" class="text-sm font-normal cursor-pointer">
-      Hidden network
+      {{ t('wifi.hidden') }}
     </Label>
   </div>
 </template>

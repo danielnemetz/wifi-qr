@@ -10,10 +10,16 @@
     "build:cli": "pnpm --filter @qr/cli build"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
-    "tsx": "^4.21.0"
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["canvas", "esbuild"]
+    "onlyBuiltDependencies": [
+      "canvas",
+      "esbuild"
+    ]
+  },
+  "dependencies": {
+    "flag-icons": "^7.5.0"
   }
 }

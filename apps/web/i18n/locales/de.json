@@ -1,0 +1,157 @@
+{
+  "qrType": "QR-Typ",
+  "chooseType": "Typ wählen",
+  "generateBtn": "QR-Code erstellen",
+  "generating": "Wird erstellt...",
+
+  "theme": {
+    "auto": "Auto (OS)",
+    "light": "Hell",
+    "dark": "Dunkel"
+  },
+
+  "types": {
+    "wifi": "WLAN",
+    "url": "URL",
+    "text": "Text",
+    "vcard": "Kontakt (vCard)",
+    "email": "E-Mail",
+    "sms": "SMS",
+    "tel": "Telefon",
+    "geo": "Standort"
+  },
+
+  "wifi": {
+    "title": "Netzwerk",
+    "ssid": "SSID (Netzwerkname)",
+    "ssidPlaceholder": "z. B. MeinNetzwerk",
+    "encryption": "Verschlüsselung",
+    "chooseCrypto": "Verschlüsselung wählen",
+    "wpa": "WPA / WPA2 / WPA3",
+    "wep": "WEP",
+    "none": "Keine (offen)",
+    "password": "Passwort",
+    "passwordPlaceholder": "WLAN-Passwort",
+    "hidden": "Verstecktes Netzwerk"
+  },
+
+  "url": {
+    "title": "URL",
+    "label": "Adresse",
+    "placeholder": "https://example.com"
+  },
+
+  "text": {
+    "title": "Text",
+    "label": "Inhalt",
+    "placeholder": "Beliebiger Text für den QR-Code …"
+  },
+
+  "vcard": {
+    "title": "Kontakt",
+    "name": "Vollständiger Name",
+    "namePlaceholder": "Max Mustermann",
+    "phone": "Telefon",
+    "phonePlaceholder": "+49 123 4567890",
+    "email": "E-Mail",
+    "emailPlaceholder": "max{'@'}beispiel.de",
+    "org": "Organisation",
+    "orgPlaceholder": "Musterfirma GmbH",
+    "addField": "Feld hinzufügen (Adresse, Beruf, Notiz...)",
+    "jobTitle": "Berufsbezeichnung",
+    "jobTitlePlaceholder": "Softwareentwickler",
+    "role": "Rolle",
+    "rolePlaceholder": "Entwicklung",
+    "website": "Webseite",
+    "websitePlaceholder": "https://example.com",
+    "note": "Notiz",
+    "notePlaceholder": "Zusätzliche Informationen …",
+    "birthday": "Geburtstag",
+    "street": "Straße",
+    "streetPlaceholder": "Musterstraße 123",
+    "zip": "PLZ",
+    "zipPlaceholder": "12345",
+    "city": "Stadt",
+    "cityPlaceholder": "Stadt",
+    "country": "Land",
+    "countryPlaceholder": "Deutschland",
+    "groupJob": "Beruf",
+    "groupLocation": "Standort",
+    "groupOther": "Sonstiges",
+    "address": "Adresse"
+  },
+
+  "email": {
+    "title": "E-Mail",
+    "address": "E-Mail-Adresse",
+    "addressPlaceholder": "empfaenger{'@'}beispiel.de",
+    "subject": "Betreff (optional)",
+    "subjectPlaceholder": "Betreffzeile",
+    "body": "Nachricht (optional)",
+    "bodyPlaceholder": "Vorausgefüllte Nachricht …"
+  },
+
+  "sms": {
+    "title": "SMS",
+    "phone": "Telefonnummer",
+    "phonePlaceholder": "+49 123 4567890",
+    "body": "Nachricht (optional)",
+    "bodyPlaceholder": "Vorausgefüllte Nachricht"
+  },
+
+  "tel": {
+    "title": "Telefon",
+    "phone": "Telefonnummer",
+    "phonePlaceholder": "+49 123 4567890"
+  },
+
+  "geo": {
+    "title": "Standort",
+    "lat": "Breitengrad",
+    "latPlaceholder": "53,551100",
+    "lng": "Längengrad",
+    "lngPlaceholder": "9,993700"
+  },
+
+  "preview": {
+    "emptyHint": "{hint} und klicke auf",
+    "emptyAction": "QR-Code erstellen",
+    "hintWifi": "Gib die Netzwerkdaten ein",
+    "hintUrl": "Gib eine URL ein",
+    "hintText": "Gib einen Text ein",
+    "hintVcard": "Gib die Kontaktdaten ein",
+    "hintEmail": "Gib eine E-Mail-Adresse ein",
+    "hintSms": "Gib eine Telefonnummer ein",
+    "hintTel": "Gib eine Telefonnummer ein",
+    "hintGeo": "Gib Breiten- und Längengrad ein"
+  },
+
+  "style": {
+    "title": "Stil",
+    "colors": "Farben",
+    "randomize": "Zufälliges Farbschema",
+    "background": "Hintergrund",
+    "dots1": "Punkte 1",
+    "dots2": "Punkte 2",
+    "corners": "Ecken",
+    "text": "Text",
+    "dotStyle": "Punktstil",
+    "outerCorners": "Äußere Ecken",
+    "innerCorners": "Innere Ecken",
+    "imageSize": "Bildgröße",
+    "padding": "Abstand",
+    "showInfo": "Infotext anzeigen",
+    "rounded": "Abgerundet",
+    "dots": "Punkte",
+    "extraRounded": "Stark abgerundet",
+    "classy": "Klassisch",
+    "classyRounded": "Klassisch abgerundet",
+    "square": "Eckig",
+    "dot": "Punkt"
+  },
+
+  "errors": {
+    "generationFailed": "Erstellung fehlgeschlagen",
+    "pdfFailed": "PDF-Erstellung fehlgeschlagen"
+  }
+}

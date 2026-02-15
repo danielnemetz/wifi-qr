@@ -1,0 +1,157 @@
+{
+  "qrType": "QR type",
+  "chooseType": "Choose type",
+  "generateBtn": "Generate QR code",
+  "generating": "Generating...",
+
+  "theme": {
+    "auto": "Auto (OS)",
+    "light": "Light",
+    "dark": "Dark"
+  },
+
+  "types": {
+    "wifi": "Wi‑Fi",
+    "url": "URL",
+    "text": "Text",
+    "vcard": "Contact (vCard)",
+    "email": "Email",
+    "sms": "SMS",
+    "tel": "Phone",
+    "geo": "Location"
+  },
+
+  "wifi": {
+    "title": "Network",
+    "ssid": "SSID (network name)",
+    "ssidPlaceholder": "e.g. MyNetwork",
+    "encryption": "Encryption",
+    "chooseCrypto": "Choose encryption",
+    "wpa": "WPA / WPA2 / WPA3",
+    "wep": "WEP",
+    "none": "None (open)",
+    "password": "Password",
+    "passwordPlaceholder": "Wi‑Fi password",
+    "hidden": "Hidden network"
+  },
+
+  "url": {
+    "title": "URL",
+    "label": "Address",
+    "placeholder": "https://example.com"
+  },
+
+  "text": {
+    "title": "Text",
+    "label": "Content",
+    "placeholder": "Any text for the QR code …"
+  },
+
+  "vcard": {
+    "title": "Contact",
+    "name": "Full Name",
+    "namePlaceholder": "John Doe",
+    "phone": "Phone",
+    "phonePlaceholder": "+1 234 567890",
+    "email": "Email",
+    "emailPlaceholder": "john{'@'}example.com",
+    "org": "Organization",
+    "orgPlaceholder": "Acme Inc.",
+    "addField": "Add field (Address, Job, Note...)",
+    "jobTitle": "Job Title",
+    "jobTitlePlaceholder": "Software Engineer",
+    "role": "Role",
+    "rolePlaceholder": "Engineering",
+    "website": "Website",
+    "websitePlaceholder": "https://example.com",
+    "note": "Note",
+    "notePlaceholder": "Additional information …",
+    "birthday": "Birthday",
+    "street": "Street",
+    "streetPlaceholder": "Main St 123",
+    "zip": "ZIP",
+    "zipPlaceholder": "12345",
+    "city": "City",
+    "cityPlaceholder": "City",
+    "country": "Country",
+    "countryPlaceholder": "Germany",
+    "groupJob": "Job",
+    "groupLocation": "Location",
+    "groupOther": "Other",
+    "address": "Address"
+  },
+
+  "email": {
+    "title": "Email",
+    "address": "Email address",
+    "addressPlaceholder": "recipient{'@'}example.com",
+    "subject": "Subject (optional)",
+    "subjectPlaceholder": "Subject line",
+    "body": "Message (optional)",
+    "bodyPlaceholder": "Pre-filled message …"
+  },
+
+  "sms": {
+    "title": "SMS",
+    "phone": "Phone number",
+    "phonePlaceholder": "+1 234 567890",
+    "body": "Message (optional)",
+    "bodyPlaceholder": "Pre-filled message"
+  },
+
+  "tel": {
+    "title": "Phone",
+    "phone": "Phone number",
+    "phonePlaceholder": "+1 234 567890"
+  },
+
+  "geo": {
+    "title": "Location",
+    "lat": "Latitude",
+    "latPlaceholder": "53.551100",
+    "lng": "Longitude",
+    "lngPlaceholder": "9.993700"
+  },
+
+  "preview": {
+    "emptyHint": "{hint} and click",
+    "emptyAction": "Generate QR code",
+    "hintWifi": "Fill in the network details",
+    "hintUrl": "Enter a URL",
+    "hintText": "Enter some text",
+    "hintVcard": "Enter contact details",
+    "hintEmail": "Enter an email address",
+    "hintSms": "Enter a phone number",
+    "hintTel": "Enter a phone number",
+    "hintGeo": "Enter latitude and longitude"
+  },
+
+  "style": {
+    "title": "Style",
+    "colors": "Colors",
+    "randomize": "Random color scheme",
+    "background": "Background",
+    "dots1": "Dots 1",
+    "dots2": "Dots 2",
+    "corners": "Corners",
+    "text": "Text",
+    "dotStyle": "Dot style",
+    "outerCorners": "Outer corners",
+    "innerCorners": "Inner corners",
+    "imageSize": "Image size",
+    "padding": "Padding",
+    "showInfo": "Show info text",
+    "rounded": "Rounded",
+    "dots": "Dots",
+    "extraRounded": "Extra Rounded",
+    "classy": "Classy",
+    "classyRounded": "Classy Rounded",
+    "square": "Square",
+    "dot": "Dot"
+  },
+
+  "errors": {
+    "generationFailed": "Generation failed",
+    "pdfFailed": "PDF generation failed"
+  }
+}

@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { QrCode, Loader2, Sun, Moon, Monitor } from 'lucide-vue-next'
+import { QrCode, Loader2 } from 'lucide-vue-next'
 import type { QrType } from '@qr/core'
-import { QR_TYPE_LABELS } from '@qr/core'
 import { QR_TYPES_ORDERED } from '~/utils/constants'
-import { useQrStyle } from '~/composables/useQrStyle'
-import { useQrGenerator } from '~/composables/useQrGenerator'
 
 const route = useRoute()
-const colorMode = useColorMode()
+const { t } = useI18n()
 
 const DEFAULT_TYPE = QR_TYPES_ORDERED[0] as QrType
 const qrType = ref<QrType>(DEFAULT_TYPE)
@@ -65,44 +62,30 @@ watch(
     debounceTimer = setTimeout(() => gen.generate(), 300)
   },
 )
+
 </script>
 
 <template>
   <div class="min-h-screen bg-muted flex items-center justify-center lg:p-6">
     <Card class="w-full lg:max-w-7xl shadow-lg rounded-none lg:rounded-xl relative">
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger as-child>
-            <Button
-              variant="ghost"
-              size="icon"
-              class="absolute top-3 right-3 h-8 w-8 z-10"
-              @click="colorMode.preference = colorMode.preference === 'system' ? 'light' : colorMode.preference === 'light' ? 'dark' : 'system'"
-            >
-              <Monitor v-if="colorMode.preference === 'system'" class="h-4 w-4" />
-              <Sun v-else-if="colorMode.preference === 'light'" class="h-4 w-4" />
-              <Moon v-else class="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{{ colorMode.preference === 'system' ? 'Auto (OS)' : colorMode.preference === 'light' ? 'Light' : 'Dark' }}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <div class="absolute top-3 right-3 z-10 flex items-center gap-1">
+        <LanguageSelector />
+        <ColorModeSelector />
+      </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3">
         <!-- Input Column -->
         <div class="lg:max-h-[min(800px,calc(100vh-100px))] flex flex-col border-b lg:border-b-0 lg:border-r border-border">
           <div class="p-5 lg:p-6 space-y-4 flex-1 overflow-y-auto min-h-0 custom-scrollbar">
             <div class="space-y-2">
-              <Label for="qrType">QR type</Label>
+              <Label for="qrType">{{ t('qrType') }}</Label>
               <Select v-model="qrType">
                 <SelectTrigger id="qrType">
-                  <SelectValue placeholder="Choose type" />
+                  <SelectValue :placeholder="t('chooseType')" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem v-for="t in QR_TYPES_ORDERED" :key="t" :value="t">
-                    {{ QR_TYPE_LABELS[t as QrType] }}
+                  <SelectItem v-for="tp in QR_TYPES_ORDERED" :key="tp" :value="tp">
+                    {{ t(`types.${tp}`) }}
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -167,7 +150,7 @@ watch(
             >
               <Loader2 v-if="gen.generating.value" class="mr-2 h-4 w-4 animate-spin" />
               <QrCode v-else class="mr-2 h-4 w-4" />
-              {{ gen.generating.value ? 'Generating...' : 'Generate QR code' }}
+              {{ gen.generating.value ? t('generating') : t('generateBtn') }}
             </Button>
           </div>
         </div>

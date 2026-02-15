@@ -1,4 +1,5 @@
 import { ref, computed, watch, type Ref } from 'vue'
+import { useI18n } from '#imports'
 import {
   type QrType,
   buildQrPayload,
@@ -30,6 +31,7 @@ export function useQrGenerator(
   qrType: Ref<QrType>,
   getStylePayload: () => QrStylePayload,
 ) {
+  const { t } = useI18n()
   // ── Wi-Fi ──
   const ssid = ref('')
   const encryption = ref('WPA')
@@ -214,18 +216,20 @@ export function useQrGenerator(
     return body
   }
 
+  const hintKeyMap: Record<string, string> = {
+    wifi: 'preview.hintWifi',
+    url: 'preview.hintUrl',
+    text: 'preview.hintText',
+    vcard: 'preview.hintVcard',
+    email: 'preview.hintEmail',
+    sms: 'preview.hintSms',
+    tel: 'preview.hintTel',
+    geo: 'preview.hintGeo',
+  }
+
   const emptyStateHint = computed(() => {
-    const hints: Record<string, string> = {
-      wifi: 'Fill in the network details',
-      url: 'Enter a URL',
-      text: 'Enter some text',
-      vcard: 'Enter contact details',
-      email: 'Enter an email address',
-      sms: 'Enter a phone number',
-      tel: 'Enter a phone number',
-      geo: 'Enter latitude and longitude',
-    }
-    return hints[qrType.value] || ''
+    const key = hintKeyMap[qrType.value]
+    return key ? t(key) : ''
   })
 
   const canGenerate = computed(() => {
@@ -277,7 +281,7 @@ export function useQrGenerator(
       const payload = getCurrentPayload()
       generatedFilename.value = buildQrPayload(qrType.value, payload).filename
     } catch (err: any) {
-      errorMessage.value = err?.data?.statusMessage || err?.message || 'Generation failed'
+      errorMessage.value = err?.data?.statusMessage || err?.message || t('errors.generationFailed')
     } finally {
       generating.value = false
     }
@@ -313,7 +317,7 @@ export function useQrGenerator(
       a.click()
       URL.revokeObjectURL(url)
     } catch (err: any) {
-      errorMessage.value = err?.data?.statusMessage || err?.message || 'PDF generation failed'
+      errorMessage.value = err?.data?.statusMessage || err?.message || t('errors.pdfFailed')
     } finally {
       downloadingPdf.value = false
     }

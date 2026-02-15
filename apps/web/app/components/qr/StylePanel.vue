@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Shuffle } from 'lucide-vue-next'
 
+const { t, locale } = useI18n()
+
 const colorBackground = defineModel<string>('colorBackground', { required: true })
 const colorDotsStart = defineModel<string>('colorDotsStart', { required: true })
 const colorDotsEnd = defineModel<string>('colorDotsEnd', { required: true })
@@ -28,10 +30,10 @@ const emit = defineEmits<{
 <template>
   <div class="lg:max-h-[min(800px,calc(100vh-100px))] flex flex-col">
     <div class="p-5 lg:p-6 space-y-4 flex-1 overflow-y-auto custom-scrollbar">
-      <h2 class="text-lg font-semibold tracking-tight">Style</h2>
+      <h2 class="text-lg font-semibold tracking-tight">{{ t('style.title') }}</h2>
       <div class="space-y-2">
         <div class="flex items-center justify-between">
-          <Label class="text-sm text-muted-foreground">Colors</Label>
+          <Label class="text-sm text-muted-foreground">{{ t('style.colors') }}</Label>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger as-child>
@@ -39,7 +41,7 @@ const emit = defineEmits<{
                   <Shuffle class="h-3.5 w-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent><p>Random color scheme</p></TooltipContent>
+              <TooltipContent><p>{{ t('style.randomize') }}</p></TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
@@ -52,7 +54,7 @@ const emit = defineEmits<{
             >
               <input id="colorBg" v-model="colorBackground" type="color" class="sr-only" />
             </label>
-            <span class="text-[10px] text-muted-foreground text-center block">Background</span>
+            <span class="text-[10px] text-muted-foreground text-center block">{{ t('style.background') }}</span>
           </div>
           <div class="space-y-1">
             <label
@@ -62,7 +64,7 @@ const emit = defineEmits<{
             >
               <input id="colorDs" v-model="colorDotsStart" type="color" class="sr-only" />
             </label>
-            <span class="text-[10px] text-muted-foreground text-center block">Dots 1</span>
+            <span class="text-[10px] text-muted-foreground text-center block">{{ t('style.dots1') }}</span>
           </div>
           <div class="space-y-1">
             <label
@@ -72,7 +74,7 @@ const emit = defineEmits<{
             >
               <input id="colorDe" v-model="colorDotsEnd" type="color" class="sr-only" />
             </label>
-            <span class="text-[10px] text-muted-foreground text-center block">Dots 2</span>
+            <span class="text-[10px] text-muted-foreground text-center block">{{ t('style.dots2') }}</span>
           </div>
           <div class="space-y-1">
             <label
@@ -82,7 +84,7 @@ const emit = defineEmits<{
             >
               <input id="colorCo" v-model="colorCorners" type="color" class="sr-only" />
             </label>
-            <span class="text-[10px] text-muted-foreground text-center block">Corners</span>
+            <span class="text-[10px] text-muted-foreground text-center block">{{ t('style.corners') }}</span>
           </div>
           <div class="space-y-1">
             <label
@@ -92,48 +94,48 @@ const emit = defineEmits<{
             >
               <input id="colorTx" v-model="colorText" type="color" class="sr-only" />
             </label>
-            <span class="text-[10px] text-muted-foreground text-center block">Text</span>
+            <span class="text-[10px] text-muted-foreground text-center block">{{ t('style.text') }}</span>
           </div>
         </div>
       </div>
       <div class="space-y-2">
-        <Label for="dotsType">Dot style</Label>
-        <Select v-model="dotsType">
+        <Label for="dotsType">{{ t('style.dotStyle') }}</Label>
+        <Select :key="'dots-' + locale" v-model="dotsType">
           <SelectTrigger id="dotsType"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="rounded">Rounded</SelectItem>
-            <SelectItem value="dots">Dots</SelectItem>
-            <SelectItem value="extra-rounded">Extra Rounded</SelectItem>
-            <SelectItem value="classy">Classy</SelectItem>
-            <SelectItem value="classy-rounded">Classy Rounded</SelectItem>
-            <SelectItem value="square">Square</SelectItem>
+            <SelectItem value="rounded">{{ t('style.rounded') }}</SelectItem>
+            <SelectItem value="dots">{{ t('style.dots') }}</SelectItem>
+            <SelectItem value="extra-rounded">{{ t('style.extraRounded') }}</SelectItem>
+            <SelectItem value="classy">{{ t('style.classy') }}</SelectItem>
+            <SelectItem value="classy-rounded">{{ t('style.classyRounded') }}</SelectItem>
+            <SelectItem value="square">{{ t('style.square') }}</SelectItem>
           </SelectContent>
         </Select>
       </div>
       <div class="space-y-2">
-        <Label for="cornersSquare">Outer corners</Label>
-        <Select v-model="cornersSquareType">
+        <Label for="cornersSquare">{{ t('style.outerCorners') }}</Label>
+        <Select :key="'csq-' + locale" v-model="cornersSquareType">
           <SelectTrigger id="cornersSquare"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="extra-rounded">Extra Rounded</SelectItem>
-            <SelectItem value="square">Square</SelectItem>
-            <SelectItem value="dot">Dot</SelectItem>
+            <SelectItem value="extra-rounded">{{ t('style.extraRounded') }}</SelectItem>
+            <SelectItem value="square">{{ t('style.square') }}</SelectItem>
+            <SelectItem value="dot">{{ t('style.dot') }}</SelectItem>
           </SelectContent>
         </Select>
       </div>
       <div class="space-y-2">
-        <Label for="cornersDot">Inner corners</Label>
-        <Select v-model="cornersDotType">
+        <Label for="cornersDot">{{ t('style.innerCorners') }}</Label>
+        <Select :key="'cd-' + locale" v-model="cornersDotType">
           <SelectTrigger id="cornersDot"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="dot">Dot</SelectItem>
-            <SelectItem value="square">Square</SelectItem>
+            <SelectItem value="dot">{{ t('style.dot') }}</SelectItem>
+            <SelectItem value="square">{{ t('style.square') }}</SelectItem>
           </SelectContent>
         </Select>
       </div>
       <div class="space-y-2">
-        <Label for="imageSize">Image size</Label>
-        <Select v-model="imageSize">
+        <Label for="imageSize">{{ t('style.imageSize') }}</Label>
+        <Select :key="'sz-' + locale" v-model="imageSize">
           <SelectTrigger id="imageSize"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem :value="600">600 px</SelectItem>
@@ -144,12 +146,12 @@ const emit = defineEmits<{
         </Select>
       </div>
       <div class="space-y-2">
-        <Label>Padding: {{ qrMargin }}</Label>
+        <Label>{{ t('style.padding') }}: {{ qrMargin }}</Label>
         <Slider v-model="qrMarginArr" :min="0" :max="80" :step="1" class="mt-2" />
       </div>
       <div class="flex items-center gap-2">
         <Checkbox id="showInfo" v-model="showInfoInImage" />
-        <Label for="showInfo" class="text-sm font-normal cursor-pointer">Show info text</Label>
+        <Label for="showInfo" class="text-sm font-normal cursor-pointer">{{ t('style.showInfo') }}</Label>
       </div>
     </div>
   </div>
