@@ -39,7 +39,7 @@ export const config = {
   // --- Info Text below QR ---
   showInfoInImage: true,      // Render SSID + password below the QR code
   fontSize: 32,
-  fontFamily: '"SF Mono", "Menlo", "Consolas", monospace',
+  fontFamily: '"Noto Sans Mono", "SF Mono", "Menlo", "Consolas", monospace',
   textTemplateSsid: 'Network: {ssid}',
   textTemplatePassword: 'Password: {password}',
 

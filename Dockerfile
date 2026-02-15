@@ -5,6 +5,7 @@ FROM node:22-alpine AS base
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Native dependencies required by the "canvas" npm package
+# fontconfig + font-noto = text rendering in generated images
 RUN apk add --no-cache \
     cairo-dev \
     pango-dev \
@@ -12,6 +13,8 @@ RUN apk add --no-cache \
     libjpeg-turbo-dev \
     librsvg-dev \
     pixman-dev \
+    fontconfig \
+    font-noto \
     python3 \
     g++ \
     make
