@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { QrCode, Loader2, Sun, Moon } from 'lucide-vue-next'
+import { QrCode, Loader2, Sun, Moon, Monitor } from 'lucide-vue-next'
 import type { QrType } from '@qr/core'
 import { QR_TYPE_LABELS } from '@qr/core'
 import { QR_TYPES_ORDERED } from '~/utils/constants'
@@ -70,15 +70,25 @@ watch(
 <template>
   <div class="min-h-screen bg-muted flex items-center justify-center lg:p-6">
     <Card class="w-full lg:max-w-7xl shadow-lg rounded-none lg:rounded-xl relative">
-      <Button
-        variant="ghost"
-        size="icon"
-        class="absolute top-3 right-3 h-8 w-8 z-10"
-        @click="colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'"
-      >
-        <Sun class="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-        <Moon class="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-      </Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger as-child>
+            <Button
+              variant="ghost"
+              size="icon"
+              class="absolute top-3 right-3 h-8 w-8 z-10"
+              @click="colorMode.preference = colorMode.preference === 'system' ? 'light' : colorMode.preference === 'light' ? 'dark' : 'system'"
+            >
+              <Monitor v-if="colorMode.preference === 'system'" class="h-4 w-4" />
+              <Sun v-else-if="colorMode.preference === 'light'" class="h-4 w-4" />
+              <Moon v-else class="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{{ colorMode.preference === 'system' ? 'Auto (OS)' : colorMode.preference === 'light' ? 'Light' : 'Dark' }}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       <div class="grid grid-cols-1 lg:grid-cols-3">
         <!-- Input Column -->
