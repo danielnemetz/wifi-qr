@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout (for docker-compose.yml)
+      - name: Checkout (for compose.yml)
         uses: actions/checkout@v4
 
       - name: Configure SSH
@@ -71,8 +71,8 @@ jobs:
           EOF
           chmod 600 ~/.ssh/config
 
-      - name: Copy docker-compose.yml to server
-        run: scp docker-compose.yml web:~/qr/docker-compose.yml
+      - name: Copy compose.yml to server
+        run: scp compose.yml web:~/qr/compose.yml
 
       - name: Pull & restart container
         run: |

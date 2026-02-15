@@ -11,14 +11,14 @@ services:
 
       # HTTP → HTTPS redirect
       - 'traefik.http.routers.qr-web.entrypoints=web'
-      - 'traefik.http.routers.qr-web.rule=Host(`qr.nmetz.de`)'
+      - 'traefik.http.routers.qr-web.rule=Host(`qr.nemetz.de`)'
       - 'traefik.http.routers.qr-web.middlewares=qr-web-redirect'
       - 'traefik.http.middlewares.qr-web-redirect.redirectscheme.scheme=https'
       - 'traefik.http.middlewares.qr-web-redirect.redirectscheme.permanent=true'
 
       # HTTPS
       - 'traefik.http.routers.qr-web-secure.entrypoints=websecure'
-      - 'traefik.http.routers.qr-web-secure.rule=Host(`qr.nmetz.de`)'
+      - 'traefik.http.routers.qr-web-secure.rule=Host(`qr.nemetz.de`)'
       - 'traefik.http.routers.qr-web-secure.tls=true'
       - 'traefik.http.routers.qr-web-secure.tls.certresolver=cloudflare'
 
